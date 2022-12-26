@@ -1,8 +1,5 @@
 package ra.payload.request;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
-
 import java.util.Date;
 import java.util.Set;
 
@@ -14,7 +11,6 @@ public class RegisterRequest {
     private String email;
     private String phone;
     private String address;
-    @JsonFormat(pattern = "dd/MM/yyyy")
     private Date userCreateDate;
     private boolean userStatus;
     private Set<String> listRoles;

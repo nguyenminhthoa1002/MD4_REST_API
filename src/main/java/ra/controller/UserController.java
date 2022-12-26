@@ -2,6 +2,7 @@ package ra.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -44,25 +45,33 @@ public class UserController {
     private PasswordEncoder encoder;
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public List<Users> getAllUser(){
         return userService.findAll();
     }
 
     @GetMapping("/{userId}")
+    @PreAuthorize("hasRole('MODERATOR') or hasRole('ADMIN')")
     public Users getUserById(@PathVariable("userId") int userId){
         return (Users) userService.findById(userId);
     }
 
     @PostMapping
-    public Users createUser(@RequestBody Users users){
-        return (Users) userService.saveOrUpdate(users);
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> createUser(@RequestBody RegisterRequest signupRequest) {
+        try {
+            return registerUser(signupRequest);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @PutMapping("/{userId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public Users updateUser(@PathVariable("userId") int userId, @RequestBody Users users){
         Users userUpdate = (Users) userService.findById(userId);
         userUpdate.setUserName(users.getUserName());
-        userUpdate.setPassword(users.getPassword());
+//        userUpdate.setPassword(users.getPassword());
         userUpdate.setLastName(users.getLastName());
         userUpdate.setFirstName(users.getFirstName());
         userUpdate.setEmail(users.getEmail());
@@ -74,11 +83,13 @@ public class UserController {
     }
 
     @DeleteMapping("/{userId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteUser(@PathVariable("userId") int userId){
         userService.delete(userId);
     }
 
     @GetMapping("search")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public List<Users> searchUserByName(@RequestParam("searchName") String searchName){
         return userService.searchUser(searchName);
     }
@@ -115,24 +126,39 @@ public class UserController {
             Roles userRole = (Roles) roleService.findByRoleName(ERole.ROLE_USER).orElseThrow(()->new RuntimeException("Error: Role is not found"));
             listRoles.add(userRole);
         }
-//        else {
-//            strRoles.forEach(role->{
-//                switch (role){
-//                    case "admin":
-//                        Roles adminRole = roleService.findByRoleName(ERole.ROLE_ADMIN)
-//                                .orElseThrow(()->new RuntimeException("Error: Role is not found"));
-//                        listRoles.add(adminRole);
-//                    case "moderator":
-//                        Roles modRole = roleService.findByRoleName(ERole.ROLE_MODERATOR)
-//                                .orElseThrow(()->new RuntimeException("Error: Role is not found"));
-//                        listRoles.add(modRole);
-//                    case "user":
-//                        Roles userRole = roleService.findByRoleName(ERole.ROLE_USER)
-//                                .orElseThrow(()->new RuntimeException("Error: Role is not found"));
-//                        listRoles.add(userRole);
-//                }
-//            });
-//        }
+        else {
+            strRoles.forEach(role->{
+                switch (role){
+                    case "admin":
+                        Roles adminRole = null;
+                        try {
+                            adminRole = (Roles) roleService.findByRoleName(ERole.ROLE_ADMIN)
+                                    .orElseThrow(()->new RuntimeException("Error: Role is not found"));
+                        } catch (Throwable e) {
+                            throw new RuntimeException(e);
+                        }
+                        listRoles.add(adminRole);
+                    case "moderator":
+                        Roles modRole = null;
+                        try {
+                            modRole = (Roles) roleService.findByRoleName(ERole.ROLE_MODERATOR)
+                                    .orElseThrow(()->new RuntimeException("Error: Role is not found"));
+                        } catch (Throwable e) {
+                            throw new RuntimeException(e);
+                        }
+                        listRoles.add(modRole);
+                    case "user":
+                        Roles userRole = null;
+                        try {
+                            userRole = (Roles) roleService.findByRoleName(ERole.ROLE_USER)
+                                    .orElseThrow(()->new RuntimeException("Error: Role is not found"));
+                        } catch (Throwable e) {
+                            throw new RuntimeException(e);
+                        }
+                        listRoles.add(userRole);
+                }
+            });
+        }
         user.setListRoles(listRoles);
         userService.saveOrUpdate(user);
         return ResponseEntity.ok(new MessageResponse("User registered successfully"));
