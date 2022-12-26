@@ -31,7 +31,7 @@ public class Users {
     @JsonFormat(pattern = "dd/MM/yyyy")
     private Date userCreateDate;
     private boolean userStatus;
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable( name = "user_role", joinColumns = @JoinColumn(name = "userId"), inverseJoinColumns = @JoinColumn(name = "roleId"))
     private Set<Roles> listRoles = new HashSet<>();
 }
