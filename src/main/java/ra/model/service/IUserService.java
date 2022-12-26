@@ -10,4 +10,5 @@ public interface IUserService<T,V> extends IShopService<T,V> {
     Users findUsersByUserName(String userName);
     boolean existsByUserName(String userName);
     boolean existsByEmail(String email);
+    List<Users> showAllUser();
 }

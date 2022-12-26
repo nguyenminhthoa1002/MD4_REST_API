@@ -9,6 +9,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import ra.model.entity.Users;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -27,7 +28,7 @@ public class CustomUserDetails implements UserDetails {
     private String email;
     private String phone;
     private String address;
-    private Date userCreateDate;
+    private LocalDateTime userCreateDate;
     private boolean userStatus;
     private Collection<? extends GrantedAuthority> authorities;
 

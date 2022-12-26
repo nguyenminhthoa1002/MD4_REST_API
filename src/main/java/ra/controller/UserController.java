@@ -7,7 +7,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import ra.jwt.JwtTokenProvider;
@@ -23,8 +22,7 @@ import ra.payload.respone.JwtResponse;
 import ra.payload.respone.MessageResponse;
 import ra.security.CustomUserDetails;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -63,14 +61,8 @@ public class UserController {
         user.setPhone(signupRequest.getPhone());
         user.setAddress(signupRequest.getAddress());
         user.setUserStatus(true);
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-        Date dateNow = new Date();
-        String strNow = sdf.format(dateNow);
-        try {
-            user.setUserCreateDate(sdf.parse(strNow));
-        }catch (Exception ex){
-            ex.printStackTrace();
-        }
+        LocalDateTime time = LocalDateTime.now();
+        user.setUserCreateDate(time);
         Set<String> strRoles = signupRequest.getListRoles();
         Set<Roles> listRoles = new HashSet<>();
         if (strRoles==null){
@@ -145,7 +137,7 @@ public class UserController {
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     public List<Users> getAllUser(){
-        return userService.findAll();
+        return userService.showAllUser();
     }
 
     @GetMapping("/{userId}")
@@ -169,14 +161,8 @@ public class UserController {
     public ResponseEntity<?> updateUser(@PathVariable("userId") int userId, @RequestBody RegisterRequest registerRequest) throws Throwable {
         Users userUpdate = (Users) userService.findById(userId);
         userUpdate.setUserStatus(registerRequest.isUserStatus());
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-        Date dateNow = new Date();
-        String strNow = sdf.format(dateNow);
-        try {
-            userUpdate.setUserCreateDate(sdf.parse(strNow));
-        }catch (Exception ex){
-            ex.printStackTrace();
-        }
+        LocalDateTime time = LocalDateTime.now();
+        userUpdate.setUserCreateDate(time);
         Set<String> strRoles = registerRequest.getListRoles();
         Set<Roles> listRoles = new HashSet<>();
         if (strRoles==null){
@@ -233,6 +219,8 @@ public class UserController {
     public List<Users> searchUserByName(@RequestParam("searchName") String searchName){
         return userService.searchUser(searchName);
     }
+
+//    --------------------- ROLE : MODERATOR ----------------------------
 
 
 }

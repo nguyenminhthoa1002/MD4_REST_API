@@ -1,5 +1,7 @@
 package ra.payload.request;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Set;
 
@@ -11,7 +13,7 @@ public class RegisterRequest {
     private String email;
     private String phone;
     private String address;
-    private Date userCreateDate;
+    private LocalDateTime userCreateDate;
     private boolean userStatus;
     private Set<String> listRoles;
 
@@ -71,11 +73,11 @@ public class RegisterRequest {
         this.address = address;
     }
 
-    public Date getUserCreateDate() {
+    public LocalDateTime getUserCreateDate() {
         return userCreateDate;
     }
 
-    public void setUserCreateDate(Date userCreateDate) {
+    public void setUserCreateDate(LocalDateTime userCreateDate) {
         this.userCreateDate = userCreateDate;
     }
 
