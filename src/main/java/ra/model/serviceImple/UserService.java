@@ -33,7 +33,9 @@ public class UserService implements IUserService<Users,Integer> {
 
     @Override
     public void delete(Integer id) {
-        userRepository.deleteById(id);
+        Users userDelete = findById(id);
+        userDelete.setUserStatus(false);
+        userRepository.save(userDelete);
     }
 
     @Override

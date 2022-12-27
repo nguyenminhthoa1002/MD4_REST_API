@@ -30,7 +30,6 @@ public class Users {
     private String phone;
     private String address;
     @JsonFormat(pattern = "dd/MM/yyyy")
-//    private Date userCreateDate;
     private LocalDateTime userCreateDate;
     private boolean userStatus;
     @ManyToMany(fetch = FetchType.EAGER)
