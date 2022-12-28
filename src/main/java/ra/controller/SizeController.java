@@ -3,9 +3,13 @@ package ra.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import ra.model.entity.Color;
 import ra.model.entity.Size;
 import ra.model.service.ISizeService;
+import ra.payload.respone.ColorResponse;
+import ra.payload.respone.SizeResponse;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:8080")
@@ -15,6 +19,8 @@ public class SizeController {
 
     @Autowired
     private ISizeService sizeService;
+
+    //    -------------------------- ROLE : ADMIN & MODERATOR --------------------
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
@@ -53,5 +59,21 @@ public class SizeController {
     @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public List<Size> searchSize(@RequestParam("searchName") String searchName){
         return sizeService.searchSize(searchName);
+    }
+
+    //    -------------------------- ROLE : USER --------------------
+    @GetMapping("/getSizeForUser")
+    @PreAuthorize("hasRole('USER')")
+    public List<SizeResponse> getSizeForUser() {
+        List<SizeResponse> list = new ArrayList<>();
+        for (Size size:getAllSize()) {
+            if (size.isSizeStatus()){
+                SizeResponse sizeResponse = new SizeResponse();
+                sizeResponse.setSizeId(size.getSizeId());
+                sizeResponse.setSizeName(size.getSizeName());
+                list.add(sizeResponse);
+            }
+        }
+        return list;
     }
 }

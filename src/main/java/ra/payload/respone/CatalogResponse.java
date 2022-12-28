@@ -4,6 +4,14 @@ public class CatalogResponse {
     private int catalogId;
     private String catalogName;
 
+    public CatalogResponse() {
+    }
+
+    public CatalogResponse(int catalogId, String catalogName) {
+        this.catalogId = catalogId;
+        this.catalogName = catalogName;
+    }
+
     public int getCatalogId() {
         return catalogId;
     }

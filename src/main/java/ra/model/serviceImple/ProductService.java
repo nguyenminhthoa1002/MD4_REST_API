@@ -21,11 +21,6 @@ public class ProductService implements IProductService<Product,Integer> {
         return productRepository.searchProductByProductNameContaining(searchName);
     }
 
-//    @Override
-//    public List<ProductDetailDTO> getAllProductDetailByProductId(int productId) {
-//        return productRepository.getAllProductDetailByProductId(productId);
-//    }
-
     @Override
     public List<Product> findAll() {
         return productRepository.findAll();

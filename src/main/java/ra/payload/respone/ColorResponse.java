@@ -5,6 +5,15 @@ public class ColorResponse {
     private String colorHex;
     private String colorName;
 
+    public ColorResponse() {
+    }
+
+    public ColorResponse(int colorId, String colorHex, String colorName) {
+        this.colorId = colorId;
+        this.colorHex = colorHex;
+        this.colorName = colorName;
+    }
+
     public int getColorId() {
         return colorId;
     }
