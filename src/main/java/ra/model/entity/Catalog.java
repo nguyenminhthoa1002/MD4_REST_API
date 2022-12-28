@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -24,10 +25,11 @@ public class Catalog {
     private int catalogId;
     private String catalogName;
     private String catalogDescription;
+    @JsonIgnore
     private int catalogParentId;
     private String catalogParentName;
     @JsonFormat(pattern = "dd/MM/yyyy")
-    private Date catalogCreateDate;
+    private LocalDateTime catalogCreateDate;
     private boolean catalogStatus;
     @OneToMany(mappedBy = "catalog", cascade = CascadeType.ALL)
     @JsonIgnore

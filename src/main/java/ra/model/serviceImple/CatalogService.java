@@ -21,8 +21,8 @@ public class CatalogService implements ICatalogService<Catalog,Integer> {
     }
 
     @Override
-    public List<Catalog> findCatalogChild(int catalogId) {
-        return catalogRepository.findCatalogChild(catalogId);
+    public List<Catalog> findChildById(int catId) {
+        return catalogRepository.findChildById(catId);
     }
 
     @Override
@@ -42,6 +42,8 @@ public class CatalogService implements ICatalogService<Catalog,Integer> {
 
     @Override
     public void delete(Integer id) {
-        catalogRepository.deleteById(id);
+        Catalog catDelete = findById(id);
+        catDelete.setCatalogStatus(false);
+        catalogRepository.save(catDelete);
     }
 }

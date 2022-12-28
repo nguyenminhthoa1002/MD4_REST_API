@@ -12,7 +12,25 @@ import java.util.List;
 public interface CatalogRepository extends JpaRepository<Catalog, Integer> {
     List<Catalog> searchCatalogByCatalogNameContaining(String searchName);
 
-//    @Query(value = "select child.catalogId, child.catalogName, parent.catalogName from catalog child join catalog parent on child.catalogParentId = parent.catalogId where child.catalogParentId=:catalogId", nativeQuery = true)
     @Query(value = "from Catalog c where c.catalogParentId=:catalogId")
     List<Catalog> findCatalogChild(@Param("catalogId") int catalogId);
+
+    @Query(value = "WITH recursive TEMPDATA(catalogId,catalogName,catalogDescription,catalogParentId,catalogParentName,catalogCreateDate,catalogStatus)\n" +
+            "                       AS (SELECT c.catalogId,\n" +
+            "                                  c.catalogName,\n" +
+            "                                  c.catalogDescription,\n" +
+            "                                  c.catalogParentId,\n" +
+            "                                  c.catalogParentName,\n" +
+            "                                  c.catalogCreateDate,\n" +
+            "                                  c.catalogStatus\n" +
+            "                           FROM catalog c\n" +
+            "                           WHERE catalogId = :catId\n" +
+            "                           union all\n" +
+            "                           select child.catalogId,child.catalogName,child.catalogDescription,child.catalogParentId,child.catalogParentName,child.catalogCreateDate,child.catalogStatus\n" +
+            "                           from TEMPDATA p\n" +
+            "                                    inner join catalog child on p.catalogId = child.catalogParentId)\n" +
+            "    SELECT *\n" +
+            "    FROM TEMPDATA where catalogId not in (:catId)",nativeQuery = true)
+    List<Catalog> findChildById(@Param("catId")int catId);
+
 }
