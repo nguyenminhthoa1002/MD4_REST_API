@@ -123,13 +123,27 @@ public class CatalogController {
         return catalogService.searchCatalog(searchName);
     }
 
+    @GetMapping("/getCatalogForCreateProduct")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+    public List<CatalogResponse> getCatalogForCreateProduct() {
+        List<Catalog> listCat = catalogService.getCatalogForCreateProduct();
+        List<CatalogResponse> listCatRes = new ArrayList<>();
+        for (Catalog cat : listCat) {
+            CatalogResponse catRes = new CatalogResponse();
+            catRes.setCatalogId(cat.getCatalogId());
+            catRes.setCatalogName(cat.getCatalogName());
+            listCatRes.add(catRes);
+        }
+        return listCatRes;
+    }
+
     //    -------------------------- ROLE : USER --------------------
-    @GetMapping("/getCatalogForUser")
+    @GetMapping("getCatalogForUser")
     @PreAuthorize("hasRole('USER')")
     public List<CatalogResponse> getCatalogForUser() {
         List<CatalogResponse> list = new ArrayList<>();
         for (Catalog cat : getAllCatalog()) {
-            if (cat.isCatalogStatus()){
+            if (cat.isCatalogStatus()) {
                 CatalogResponse catalogResponse = new CatalogResponse();
                 catalogResponse.setCatalogId(cat.getCatalogId());
                 catalogResponse.setCatalogName(cat.getCatalogName());

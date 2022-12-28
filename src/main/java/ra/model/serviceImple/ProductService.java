@@ -22,6 +22,16 @@ public class ProductService implements IProductService<Product,Integer> {
     }
 
     @Override
+    public List<Product> getAllProductByCatalogId(int catId) {
+        return productRepository.getAllProductByCatalogId(catId);
+    }
+
+    @Override
+    public List<Product> displayProduct() {
+        return productRepository.displayProduct();
+    }
+
+    @Override
     public List<Product> findAll() {
         return productRepository.findAll();
     }
@@ -38,6 +48,8 @@ public class ProductService implements IProductService<Product,Integer> {
 
     @Override
     public void delete(Integer id) {
-        productRepository.deleteById(id);
+        Product proDelete = findById(id);
+        proDelete.setProductStatus(false);
+        productRepository.save(proDelete);
     }
 }

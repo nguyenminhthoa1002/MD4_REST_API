@@ -12,6 +12,12 @@ import java.util.List;
 public interface ProductRepository extends JpaRepository<Product,Integer> {
     List<Product> searchProductByProductNameContaining(String searchName);
 
+    @Query(value = "select * from product where catalogId=:catId",nativeQuery = true)
+    List<Product> getAllProductByCatalogId(@Param("catId") int catId);
+
+    @Query(value = "select * from product where productStatus = 1",nativeQuery = true)
+    List<Product> displayProduct();
+
 //    @Query(value = "select * from productDetail where productId=:searchName", nativeQuery = true)
 //    List<ProductDetail> getAllProductDetailByProductId(@Param("searchName") int searchName);
 

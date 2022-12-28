@@ -23,25 +23,26 @@ public class ColorController {
     //    -------------------------- ROLE : ADMIN & MODERATOR --------------------
     @GetMapping
     @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
-    public List<Color> getAllColor(){
+    public List<Color> getAllColor() {
         return colorService.findAll();
     }
 
     @GetMapping("/{colorId}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
-    public Color getColorById(@PathVariable("colorId") int colorId){
+    public Color getColorById(@PathVariable("colorId") int colorId) {
         return (Color) colorService.findById(colorId);
     }
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
-    public Color createColor(@RequestBody Color color){
+    public Color createColor(@RequestBody Color color) {
+        color.setColorStatus(true);
         return (Color) colorService.saveOrUpdate(color);
     }
 
     @PutMapping("/{colorId}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
-    public Color updateColor(@PathVariable("colorId") int colorId, @RequestBody Color color){
+    public Color updateColor(@PathVariable("colorId") int colorId, @RequestBody Color color) {
         Color colorUpdate = (Color) colorService.findById(colorId);
         colorUpdate.setColorHex(color.getColorHex());
         colorUpdate.setColorName(color.getColorName());
@@ -51,31 +52,29 @@ public class ColorController {
 
     @DeleteMapping("/{colorId}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
-    public void deleteColor(@PathVariable("colorId") int colorId){
+    public void deleteColor(@PathVariable("colorId") int colorId) {
         colorService.delete(colorId);
     }
 
     @GetMapping("search")
     @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
-    public List<Color> searchColor(@RequestParam("searchName") String searchName){
+    public List<Color> searchColor(@RequestParam("searchName") String searchName) {
         return colorService.searchColor(searchName);
     }
 
     //    -------------------------- ROLE : USER --------------------
-    @GetMapping("/getColorForUser")
+    @GetMapping("getColorForUser")
     @PreAuthorize("hasRole('USER')")
     public List<ColorResponse> getColorForUser() {
+        List<Color> listColor = colorService.getColorForUser();
         List<ColorResponse> list = new ArrayList<>();
-        for (Color color : getAllColor()) {
-            if (color.isColorStatus()){
-                ColorResponse colorResponse = new ColorResponse();
-                colorResponse.setColorId(color.getColorId());
-                colorResponse.setColorHex(color.getColorHex());
-                colorResponse.setColorName(color.getColorName());
-                list.add(colorResponse);
-            }
+        for (Color color : listColor) {
+            ColorResponse colorResponse = new ColorResponse();
+            colorResponse.setColorId(color.getColorId());
+            colorResponse.setColorHex(color.getColorHex());
+            colorResponse.setColorName(color.getColorName());
+            list.add(colorResponse);
         }
         return list;
     }
-
 }

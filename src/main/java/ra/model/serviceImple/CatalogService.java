@@ -27,6 +27,11 @@ public class CatalogService implements ICatalogService<Catalog,Integer> {
     }
 
     @Override
+    public List<Catalog> getCatalogForCreateProduct() {
+        return catalogRepository.getCatalogForCreateProduct();
+    }
+
+    @Override
     public List<Catalog> findAll() {
         return catalogRepository.findAll();
     }

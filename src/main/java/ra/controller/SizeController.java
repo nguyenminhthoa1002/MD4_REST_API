@@ -24,25 +24,26 @@ public class SizeController {
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
-    public List<Size> getAllSize(){
+    public List<Size> getAllSize() {
         return sizeService.findAll();
     }
 
     @GetMapping("/{sizeId}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
-    public Size getById(@PathVariable("sizeId") int sizeId){
+    public Size getById(@PathVariable("sizeId") int sizeId) {
         return (Size) sizeService.findById(sizeId);
     }
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
-    public Size createSize(@RequestBody Size size){
+    public Size createSize(@RequestBody Size size) {
+        size.setSizeStatus(true);
         return (Size) sizeService.saveOrUpdate(size);
     }
 
     @PutMapping("/{sizeId}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
-    public Size updateSize(@PathVariable("sizeId") int sizeId, @RequestBody Size size){
+    public Size updateSize(@PathVariable("sizeId") int sizeId, @RequestBody Size size) {
         Size sizeUpdate = (Size) sizeService.findById(sizeId);
         sizeUpdate.setSizeName(size.getSizeName());
         sizeUpdate.setSizeStatus(size.isSizeStatus());
@@ -51,13 +52,13 @@ public class SizeController {
 
     @DeleteMapping("/{sizeId}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
-    public void deleteSize(@PathVariable("sizeId") int sizeId){
+    public void deleteSize(@PathVariable("sizeId") int sizeId) {
         sizeService.delete(sizeId);
     }
 
     @GetMapping("search")
     @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
-    public List<Size> searchSize(@RequestParam("searchName") String searchName){
+    public List<Size> searchSize(@RequestParam("searchName") String searchName) {
         return sizeService.searchSize(searchName);
     }
 
@@ -65,14 +66,13 @@ public class SizeController {
     @GetMapping("/getSizeForUser")
     @PreAuthorize("hasRole('USER')")
     public List<SizeResponse> getSizeForUser() {
+        List<Size> listSize = sizeService.getSizeForUser();
         List<SizeResponse> list = new ArrayList<>();
-        for (Size size:getAllSize()) {
-            if (size.isSizeStatus()){
-                SizeResponse sizeResponse = new SizeResponse();
-                sizeResponse.setSizeId(size.getSizeId());
-                sizeResponse.setSizeName(size.getSizeName());
-                list.add(sizeResponse);
-            }
+        for (Size size : listSize) {
+            SizeResponse sizeResponse = new SizeResponse();
+            sizeResponse.setSizeId(size.getSizeId());
+            sizeResponse.setSizeName(size.getSizeName());
+            list.add(sizeResponse);
         }
         return list;
     }

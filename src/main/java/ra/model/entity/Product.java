@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -26,7 +27,7 @@ public class Product {
     private float productExportPrice;
     private int totalQuantity;
     private String productImg;
-    private Date productCreateDate;
+    private LocalDateTime productCreateDate;
     private boolean productStatus;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "catalogId", referencedColumnName = "catalogId")
@@ -41,4 +42,5 @@ public class Product {
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "Product_Size", joinColumns = @JoinColumn(name = "productId"), inverseJoinColumns = @JoinColumn(name = "sizeId"))
     private Set<Size> listSize = new HashSet<>();
+
 }

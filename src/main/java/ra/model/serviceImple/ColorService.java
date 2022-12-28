@@ -22,6 +22,11 @@ public class ColorService implements IColorService<Color,Integer> {
     }
 
     @Override
+    public List<Color> getColorForUser() {
+        return colorRepository.getColorForUser();
+    }
+
+    @Override
     public List<Color> findAll() {
         return colorRepository.findAll();
     }

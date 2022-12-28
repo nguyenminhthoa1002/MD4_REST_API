@@ -34,5 +34,11 @@ public interface CatalogRepository extends JpaRepository<Catalog, Integer> {
             "    FROM TEMPDATA where catalogId not in (:catId)",nativeQuery = true)
     List<Catalog> findChildById(@Param("catId")int catId);
 
+    @Query(value = "select  child.catalogId,child.catalogName,child.catalogDescription,child.catalogParentId,child.catalogCreateDate,child.catalogStatus,child.catalogParentName\n" +
+            "from catalog child\n" +
+            "where child.catalogStatus=1 and child.catalogId not in (select p.catalogId\n" +
+            "                                                        from catalog p inner join catalog c on p.catalogId=c.catalogParentId\n" +
+            "                                                        group by p.catalogId )",nativeQuery = true)
+    List<Catalog> getCatalogForCreateProduct();
 
 }

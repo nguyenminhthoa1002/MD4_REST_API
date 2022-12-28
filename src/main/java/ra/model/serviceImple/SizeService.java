@@ -42,4 +42,9 @@ public class SizeService implements ISizeService<Size,Integer> {
     public List<Size> searchSize(String searchName) {
         return sizeRepository.searchSizeBySizeName(searchName);
     }
+
+    @Override
+    public List<Size> getSizeForUser() {
+        return sizeRepository.getSizeForUser();
+    }
 }
