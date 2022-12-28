@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ra.model.entity.Catalog;
+import ra.payload.respone.CatalogResponse;
 
 import java.util.List;
 
@@ -32,5 +33,6 @@ public interface CatalogRepository extends JpaRepository<Catalog, Integer> {
             "    SELECT *\n" +
             "    FROM TEMPDATA where catalogId not in (:catId)",nativeQuery = true)
     List<Catalog> findChildById(@Param("catId")int catId);
+
 
 }

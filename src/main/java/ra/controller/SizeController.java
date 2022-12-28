@@ -1,6 +1,7 @@
 package ra.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ra.model.entity.Size;
 import ra.model.service.ISizeService;
@@ -14,36 +15,42 @@ public class SizeController {
 
     @Autowired
     private ISizeService sizeService;
-//
-//    @GetMapping
-//    public List<Size> getAllSize(){
-//        return sizeService.findAll();
-//    }
-//
-//    @GetMapping("/{sizeId}")
-//    public Size getById(@PathVariable("sizeId") int sizeId){
-//        return (Size) sizeService.findById(sizeId);
-//    }
-//
-//    @PostMapping
-//    public Size createSize(@RequestBody Size size){
-//        return (Size) sizeService.saveOrUpdate(size);
-//    }
-//
-//    @PutMapping("/{sizeId}")
-//    public Size updateSize(@PathVariable("sizeId") int sizeId, @RequestBody Size size){
-//        Size sizeUpdate = (Size) sizeService.findById(sizeId);
-//        sizeUpdate.setSizeName(size.getSizeName());
-//        sizeUpdate.setSizeStatus(size.isSizeStatus());
-//        return (Size) sizeService.saveOrUpdate(sizeUpdate);
-//    }
+
+    @GetMapping
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+    public List<Size> getAllSize(){
+        return sizeService.findAll();
+    }
+
+    @GetMapping("/{sizeId}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+    public Size getById(@PathVariable("sizeId") int sizeId){
+        return (Size) sizeService.findById(sizeId);
+    }
+
+    @PostMapping
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+    public Size createSize(@RequestBody Size size){
+        return (Size) sizeService.saveOrUpdate(size);
+    }
+
+    @PutMapping("/{sizeId}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+    public Size updateSize(@PathVariable("sizeId") int sizeId, @RequestBody Size size){
+        Size sizeUpdate = (Size) sizeService.findById(sizeId);
+        sizeUpdate.setSizeName(size.getSizeName());
+        sizeUpdate.setSizeStatus(size.isSizeStatus());
+        return (Size) sizeService.saveOrUpdate(sizeUpdate);
+    }
 
     @DeleteMapping("/{sizeId}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public void deleteSize(@PathVariable("sizeId") int sizeId){
         sizeService.delete(sizeId);
     }
 
     @GetMapping("search")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public List<Size> searchSize(@RequestParam("searchName") String searchName){
         return sizeService.searchSize(searchName);
     }

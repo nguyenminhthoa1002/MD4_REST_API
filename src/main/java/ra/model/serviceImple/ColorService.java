@@ -38,6 +38,8 @@ public class ColorService implements IColorService<Color,Integer> {
 
     @Override
     public void delete(Integer id) {
-        colorRepository.deleteById(id);
+        Color colorDelete = findById(id);
+        colorDelete.setColorStatus(false);
+        colorRepository.save(colorDelete);
     }
 }

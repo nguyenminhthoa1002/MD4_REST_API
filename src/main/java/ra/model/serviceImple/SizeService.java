@@ -33,7 +33,9 @@ public class SizeService implements ISizeService<Size,Integer> {
 
     @Override
     public void delete(Integer id) {
-        sizeRepository.deleteById(id);
+        Size sizeDelete =findById(id);
+        sizeDelete.setSizeStatus(false);
+        sizeRepository.save(sizeDelete);
     }
 
     @Override

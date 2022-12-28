@@ -9,6 +9,7 @@ import ra.model.entity.Product;
 import ra.model.service.ICatalogService;
 import ra.payload.request.CatalogRequest;
 import ra.payload.request.CatalogUpdateRequest;
+import ra.payload.respone.CatalogResponse;
 import ra.payload.respone.MessageResponse;
 
 import java.time.LocalDateTime;
@@ -54,16 +55,27 @@ public class CatalogController {
         return (Catalog) catalogService.saveOrUpdate(catNew);
     }
 
+    @GetMapping("showListCatalogChild/{catalogId}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+    public List<Catalog> findCatChild(@PathVariable("catalogId") int catalogId) {
+        return catalogService.findChildById(catalogId);
+    }
+
     @PutMapping("/{catalogId}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public Catalog updateCatalog(@PathVariable("catalogId") int catalogId, @RequestBody CatalogUpdateRequest catalog) {
         Catalog catUpdate = (Catalog) catalogService.findById(catalogId);
         List<Catalog> listChild = catalogService.findChildById(catalogId);
-        Catalog catPaUpdate = (Catalog) catalogService.findById(catalog.getCatalogParentId());
         catUpdate.setCatalogName(catalog.getCatalogName());
         catUpdate.setCatalogDescription(catalog.getCatalogDescription());
-        catUpdate.setCatalogParentId(catPaUpdate.getCatalogId());
-        catUpdate.setCatalogParentName(catPaUpdate.getCatalogName());
+        if (catalog.getCatalogParentId() == 0) {
+            catUpdate.setCatalogParentId(0);
+            catUpdate.setCatalogParentName("root");
+        } else {
+            Catalog catPaUpdate = (Catalog) catalogService.findById(catalog.getCatalogParentId());
+            catUpdate.setCatalogParentId(catPaUpdate.getCatalogId());
+            catUpdate.setCatalogParentName(catPaUpdate.getCatalogName());
+        }
         LocalDateTime time = LocalDateTime.now();
         catUpdate.setCatalogCreateDate(time);
         catUpdate.setCatalogStatus(catalog.isCatalogStatus());
@@ -78,6 +90,7 @@ public class CatalogController {
                     }
                 }
                 for (Catalog catChild : listChildUpdate) {
+                    catChild.setCatalogParentName(catalog.getCatalogName());
                     catChild.setCatalogStatus(true);
                     catalogService.saveOrUpdate(catChild);
                 }
@@ -111,5 +124,18 @@ public class CatalogController {
     }
 
     //    -------------------------- ROLE : USER --------------------
-
+    @GetMapping("/getCatalogForUser")
+    @PreAuthorize("hasRole('USER')")
+    public List<CatalogResponse> getCatalogForUser() {
+        List<CatalogResponse> list = new ArrayList<>();
+        for (Catalog cat : getAllCatalog()) {
+            if (cat.isCatalogStatus()){
+                CatalogResponse catalogResponse = new CatalogResponse();
+                catalogResponse.setCatalogId(cat.getCatalogId());
+                catalogResponse.setCatalogName(cat.getCatalogName());
+                list.add(catalogResponse);
+            }
+        }
+        return list;
+    }
 }
