@@ -1,7 +1,6 @@
 package ra.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ra.model.entity.Catalog;
@@ -13,6 +12,7 @@ import ra.model.service.IProductService;
 import ra.model.entity.Product;
 import ra.model.service.ISizeService;
 import ra.payload.request.ProductRequest;
+import ra.payload.request.SearchProductByColorOrSize;
 import ra.payload.respone.*;
 
 import java.time.LocalDateTime;
@@ -310,5 +310,82 @@ public class ProductController {
         return productResponseForUserList;
     }
 
+    @GetMapping("/searchProductByProductExportPrice")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('USER')")
+    public List<ProductResponseForUser> searchProductByProductExportPriceBetween(@RequestParam("min") float min, @RequestParam("max") float max) {
+        List<Product> listProduct = productService.searchProductByProductExportPriceBetween(min, max);
+        List<ProductResponseForUser> responseForUserList = new ArrayList<>();
+        for (Product pro : listProduct) {
+            ProductResponseForUser prfu = new ProductResponseForUser();
+            prfu.setProductId(pro.getProductId());
+            prfu.setProductName(pro.getProductName());
+            prfu.setProductExportPrice(pro.getProductExportPrice());
+            prfu.setProductImg(pro.getProductImg());
+            responseForUserList.add(prfu);
+        }
+        return responseForUserList;
+    }
 
+    @GetMapping("/searchProductByColor")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('USER')")
+    public List<ProductResponseForUser> searchProductByColorName(@RequestBody SearchProductByColorOrSize searchColor) {
+//        List<Product> listAllProduct = productService.findAll();
+//        List<Product> listProductSearchByColor = new ArrayList<>();
+//        for (Product pro : listAllProduct) {
+//            for (Color color : pro.getListColor()) {
+//                for (String str : searchColor.getSearch()) {
+//                    if (color.getColorId() == Integer.parseInt(str)) {
+//                        listProductSearchByColor.add(pro);
+//                    }
+//                }
+//            }
+//        }
+        List<Color> listColorAll = colorService.findAll();
+        Set<Color> listColor = new HashSet<>();
+        for (Color color : listColorAll) {
+            for (String strColor : searchColor.getSearch()) {
+                if (color.getColorId() == Integer.parseInt(strColor)) {
+                    listColor.add((Color) colorService.findById(Integer.parseInt(strColor)));
+                }
+            }
+        }
+        List<Product> listSearch = productService.findByListColor(listColor);
+
+        List<ProductResponseForUser> responseForUserList = new ArrayList<>();
+        for (Product product : listSearch) {
+            ProductResponseForUser proRes = new ProductResponseForUser();
+            proRes.setProductId(product.getProductId());
+            proRes.setProductName(product.getProductName());
+            proRes.setProductExportPrice(product.getProductExportPrice());
+            proRes.setProductImg(product.getProductImg());
+            responseForUserList.add(proRes);
+        }
+        return responseForUserList;
+    }
+
+    @GetMapping("/searchProductBySize")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('USER')")
+    public List<ProductResponseForUser> searchProductBySizeName(@RequestBody SearchProductByColorOrSize searchSize) {
+        List<Product> listAllProduct = productService.findAll();
+        List<Product> listProductSearchBySize = new ArrayList<>();
+        for (Product pro : listAllProduct) {
+            for (Size size : pro.getListSize()){
+                for (String str : searchSize.getSearch()) {
+                    if (size.getSizeId() == Integer.parseInt(str)) {
+                        listProductSearchBySize.add(pro);
+                    }
+                }
+            }
+        }
+        List<ProductResponseForUser> responseForUserList = new ArrayList<>();
+        for (Product product : listProductSearchBySize) {
+            ProductResponseForUser proRes = new ProductResponseForUser();
+            proRes.setProductId(product.getProductId());
+            proRes.setProductName(product.getProductName());
+            proRes.setProductExportPrice(product.getProductExportPrice());
+            proRes.setProductImg(product.getProductImg());
+            responseForUserList.add(proRes);
+        }
+        return responseForUserList;
+    }
 }
