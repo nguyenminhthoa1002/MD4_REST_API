@@ -8,9 +8,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "user")
@@ -35,4 +33,7 @@ public class Users {
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable( name = "user_role", joinColumns = @JoinColumn(name = "userId"), inverseJoinColumns = @JoinColumn(name = "roleId"))
     private Set<Roles> listRoles = new HashSet<>();
+    @OneToMany(mappedBy = "users")
+    @JsonIgnore
+    private List<Orders> listOrder = new ArrayList<>();
 }

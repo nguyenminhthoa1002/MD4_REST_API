@@ -7,7 +7,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -32,4 +34,7 @@ public class ProductDetail {
     @JoinColumn(name = "sizeId", referencedColumnName = "sizeId")
     private Size size;
     private boolean productDetailStatus;
+    @OneToMany(mappedBy = "productDetail")
+    @JsonIgnore
+    private Set<OrderDetail> listOrderDetail = new HashSet<>();
 }
