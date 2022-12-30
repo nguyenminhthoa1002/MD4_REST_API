@@ -9,6 +9,7 @@ import ra.model.repository.ColorRepository;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @Transactional(rollbackFor = SQLException.class)
@@ -25,6 +26,12 @@ public class ColorService implements IColorService<Color,Integer> {
     public List<Color> getColorForUser() {
         return colorRepository.getColorForUser();
     }
+
+    @Override
+    public Set<Color> findByColorIdIn(int[] listColor) {
+        return colorRepository.findByColorIdIn(listColor);
+    }
+
 
     @Override
     public List<Color> findAll() {

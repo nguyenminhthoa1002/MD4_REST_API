@@ -79,16 +79,9 @@ public class CatalogController {
         LocalDateTime time = LocalDateTime.now();
         catUpdate.setCatalogCreateDate(time);
         catUpdate.setCatalogStatus(catalog.isCatalogStatus());
-        List<Catalog> listChildUpdate = new ArrayList<>();
+        Set<Catalog> listChildUpdate = catalogService.findByCatalogIdIn(catalog.getStrArr());
         if (listChild != null) {
             if (catalog.isCatalogStatus()) {
-                for (Catalog cat : getAllCatalog()) {
-                    for (String str : catalog.getStrArr()) {
-                        if (cat.getCatalogId() == Integer.parseInt(str)) {
-                            listChildUpdate.add(getCatalogById(Integer.parseInt(str)));
-                        }
-                    }
-                }
                 for (Catalog catChild : listChildUpdate) {
                     catChild.setCatalogParentName(catalog.getCatalogName());
                     catChild.setCatalogStatus(true);
@@ -127,6 +120,20 @@ public class CatalogController {
     @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public List<CatalogResponse> getCatalogForCreateProduct() {
         List<Catalog> listCat = catalogService.getCatalogForCreateProduct();
+        List<CatalogResponse> listCatRes = new ArrayList<>();
+        for (Catalog cat : listCat) {
+            CatalogResponse catRes = new CatalogResponse();
+            catRes.setCatalogId(cat.getCatalogId());
+            catRes.setCatalogName(cat.getCatalogName());
+            listCatRes.add(catRes);
+        }
+        return listCatRes;
+    }
+
+    @GetMapping("initCreate")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+    public List<CatalogResponse> getCatalogForCreatCatalog() {
+        List<Catalog> listCat = catalogService.getCatalogForCreatCatalog();
         List<CatalogResponse> listCatRes = new ArrayList<>();
         for (Catalog cat : listCat) {
             CatalogResponse catRes = new CatalogResponse();

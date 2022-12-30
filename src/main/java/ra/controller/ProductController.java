@@ -3,23 +3,15 @@ package ra.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import ra.model.entity.Catalog;
-import ra.model.entity.Color;
-import ra.model.entity.Size;
-import ra.model.service.ICatalogService;
-import ra.model.service.IColorService;
-import ra.model.service.IProductService;
-import ra.model.entity.Product;
-import ra.model.service.ISizeService;
+import ra.model.entity.*;
+import ra.model.service.*;
 import ra.payload.request.ProductRequest;
+import ra.payload.request.SearchByPriceColorSize;
 import ra.payload.request.SearchProductByColorOrSize;
 import ra.payload.respone.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @CrossOrigin(origins = "http://localhost:8080")
 @RestController
@@ -33,6 +25,8 @@ public class ProductController {
     private ISizeService sizeService;
     @Autowired
     private ICatalogService catalogService;
+    @Autowired
+    private IImageService imageService;
 
     //    -------------------------- ROLE : ADMIN & MODERATOR --------------------
     @GetMapping
@@ -42,6 +36,7 @@ public class ProductController {
         List<ProductResponse> listProductResponse = new ArrayList<>();
         Set<String> listColorName = new HashSet<>();
         Set<String> listSizeName = new HashSet<>();
+        Set<String> listSubImageString = new HashSet<>();
         for (Product pro : listProduct) {
             for (Color color : pro.getListColor()) {
                 listColorName.add(color.getColorName());
@@ -49,9 +44,12 @@ public class ProductController {
             for (Size size : pro.getListSize()) {
                 listSizeName.add(size.getSizeName());
             }
+            for (Image image : pro.getListSubImage()) {
+                listSubImageString.add(image.getImageLink());
+            }
             ProductResponse productResponse = new ProductResponse(pro.getProductId(), pro.getProductName(), pro.getProductDescription(),
-                    pro.getProductImportPrice(), pro.getProductExportPrice(), pro.getProductImg(), pro.getCatalog().getCatalogName(),
-                    pro.getProductCreateDate(), pro.isProductStatus(), listColorName, listSizeName);
+                    pro.getProductImportPrice(), pro.getProductExportPrice(), pro.getTotalQuantity(),pro.getProductImg(), pro.getCatalog().getCatalogName(),
+                    pro.getProductCreateDate(), pro.isProductStatus(), listColorName, listSizeName, listSubImageString);
             listProductResponse.add(productResponse);
         }
         return listProductResponse;
@@ -63,15 +61,19 @@ public class ProductController {
         Product pro = (Product) productService.findById(productId);
         Set<String> listColorName = new HashSet<>();
         Set<String> listSizeName = new HashSet<>();
+        Set<String> listSubImageString = new HashSet<>();
         for (Color color : pro.getListColor()) {
             listColorName.add(color.getColorName());
         }
         for (Size size : pro.getListSize()) {
             listSizeName.add(size.getSizeName());
         }
+        for (Image image : pro.getListSubImage()) {
+            listSubImageString.add(image.getImageLink());
+        }
         ProductResponse productResponse = new ProductResponse(pro.getProductId(), pro.getProductName(), pro.getProductDescription(),
-                pro.getProductImportPrice(), pro.getProductExportPrice(), pro.getProductImg(), pro.getCatalog().getCatalogName(),
-                pro.getProductCreateDate(), pro.isProductStatus(), listColorName, listSizeName);
+                pro.getProductImportPrice(), pro.getProductExportPrice(), pro.getTotalQuantity(),pro.getProductImg(), pro.getCatalog().getCatalogName(),
+                pro.getProductCreateDate(), pro.isProductStatus(), listColorName, listSizeName, listSubImageString);
         return productResponse;
     }
 
@@ -89,27 +91,20 @@ public class ProductController {
         LocalDateTime time = LocalDateTime.now();
         proNew.setProductCreateDate(time);
         proNew.setProductStatus(true);
-        List<Color> listColorAll = colorService.findAll();
-        Set<Color> listColor = new HashSet<>();
-        for (Color color : listColorAll) {
-            for (String strColor : product.getColorStrArr()) {
-                if (color.getColorId() == Integer.parseInt(strColor)) {
-                    listColor.add((Color) colorService.findById(Integer.parseInt(strColor)));
-                }
-            }
-        }
+        Set<Color> listColor = colorService.findByColorIdIn(product.getColorStrArr());
         proNew.setListColor(listColor);
-        List<Size> listSizeAll = sizeService.findAll();
-        Set<Size> listSize = new HashSet<>();
-        for (Size size : listSizeAll) {
-            for (String strSize : product.getSizeStrArr()) {
-                if (size.getSizeId() == Integer.parseInt(strSize)) {
-                    listSize.add((Size) sizeService.findById(Integer.parseInt(strSize)));
-                }
-            }
-        }
+        Set<Size> listSize = sizeService.findBySizeIdIn(product.getSizeStrArr());
         proNew.setListSize(listSize);
         productService.saveOrUpdate(proNew);
+        Set<String> listSubImage = new HashSet<>();
+        for (String str : product.getListSubImage()) {
+            listSubImage.add(str);
+            Image image = new Image();
+            image.setImageLink(str);
+            image.setImageStatus(true);
+            image.setProduct(proNew);
+            imageService.saveOrUpdate(image);
+        }
 
         Set<String> listColorName = new HashSet<>();
         for (Color color : listColor) {
@@ -121,8 +116,8 @@ public class ProductController {
         }
 
         ProductResponse productResponse = new ProductResponse(proNew.getProductId(), proNew.getProductName(), proNew.getProductDescription(),
-                proNew.getProductImportPrice(), proNew.getProductExportPrice(), proNew.getProductImg(), proNew.getCatalog().getCatalogName(),
-                proNew.getProductCreateDate(), proNew.isProductStatus(), listColorName, listSizeName);
+                proNew.getProductImportPrice(), proNew.getProductExportPrice(), proNew.getTotalQuantity(), proNew.getProductImg(), proNew.getCatalog().getCatalogName(),
+                proNew.getProductCreateDate(), proNew.isProductStatus(), listColorName, listSizeName, listSubImage);
         return productResponse;
 
     }
@@ -142,35 +137,21 @@ public class ProductController {
         productUpdate.setProductCreateDate(time);
         productUpdate.setProductStatus(product.isProductStatus());
         productUpdate.setCatalog(catalog);
-        List<Color> listColorAll = colorService.findAll();
-        Set<Color> listColor = new HashSet<>();
-        if (product.getColorStrArr().length == 0) {
-            listColor = productUpdate.getListColor();
-        } else {
-            for (Color color : listColorAll) {
-                for (String strColor : product.getColorStrArr()) {
-                    if (color.getColorId() == Integer.parseInt(strColor)) {
-                        listColor.add((Color) colorService.findById(Integer.parseInt(strColor)));
-                    }
-                }
-            }
-        }
+        Set<Color> listColor = colorService.findByColorIdIn(product.getColorStrArr());
         productUpdate.setListColor(listColor);
-        List<Size> listSizeAll = sizeService.findAll();
-        Set<Size> listSize = new HashSet<>();
-        if (product.getSizeStrArr().length == 0) {
-            listSize = productUpdate.getListSize();
-        } else {
-            for (Size size : listSizeAll) {
-                for (String strSize : product.getSizeStrArr()) {
-                    if (size.getSizeId() == Integer.parseInt(strSize)) {
-                        listSize.add((Size) sizeService.findById(Integer.parseInt(strSize)));
-                    }
-                }
-            }
-        }
+        Set<Size> listSize = sizeService.findBySizeIdIn(product.getSizeStrArr());
         productUpdate.setListSize(listSize);
         productService.saveOrUpdate(productUpdate);
+
+        Set<String> listSubImage = new HashSet<>();
+        for (String str : product.getListSubImage()) {
+            listSubImage.add(str);
+            Image image = new Image();
+            image.setImageLink(str);
+            image.setImageStatus(true);
+            image.setProduct(productUpdate);
+            imageService.saveOrUpdate(image);
+        }
 
         Set<String> listColorName = new HashSet<>();
         for (Color color : listColor) {
@@ -182,8 +163,8 @@ public class ProductController {
         }
 
         ProductResponse productResponse = new ProductResponse(productUpdate.getProductId(), productUpdate.getProductName(), productUpdate.getProductDescription(),
-                productUpdate.getProductImportPrice(), productUpdate.getProductExportPrice(), productUpdate.getProductImg(), productUpdate.getCatalog().getCatalogName(),
-                productUpdate.getProductCreateDate(), productUpdate.isProductStatus(), listColorName, listSizeName);
+                productUpdate.getProductImportPrice(), productUpdate.getProductExportPrice(), productUpdate.getTotalQuantity(),productUpdate.getProductImg(), productUpdate.getCatalog().getCatalogName(),
+                productUpdate.getProductCreateDate(), productUpdate.isProductStatus(), listColorName, listSizeName, listSubImage);
         return productResponse;
     }
 
@@ -219,6 +200,11 @@ public class ProductController {
                 listSizeName.add(size.getSizeName());
             }
             pr.setListSizeName(listSizeName);
+            Set<String> listSubImage = new HashSet<>();
+            for (Image img : pro.getListSubImage()) {
+                listSubImage.add(img.getImageLink());
+            }
+            pr.setListSubImage(listSubImage);
             listProResponse.add(pr);
         }
         return listProResponse;
@@ -226,9 +212,9 @@ public class ProductController {
 
     @GetMapping("/getAllProductByCatalogId")
     @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
-    public List<ProductResponse> getAllProductByCatalogId(@RequestParam("catId") int catId) {
-        List<Product> listPro = productService.getAllProductByCatalogId(catId);
-        List<ProductResponse> listProResponse = new ArrayList<>();
+    public Set<ProductResponse> getAllProductByCatalogId(@RequestParam("catId") int catId) {
+        Set<Product> listPro = productService.findByCatalog_CatalogId(catId);
+        Set<ProductResponse> listProResponse = new HashSet<>();
         for (Product pro : listPro) {
             ProductResponse pr = new ProductResponse();
             pr.setProductId(pro.getProductId());
@@ -250,6 +236,11 @@ public class ProductController {
                 listSizeName.add(size.getSizeName());
             }
             pr.setListSizeName(listSizeName);
+            Set<String> listSubImage = new HashSet<>();
+            for (Image img : pro.getListSubImage()) {
+                listSubImage.add(img.getImageLink());
+            }
+            pr.setListSubImage(listSubImage);
             listProResponse.add(pr);
         }
         return listProResponse;
@@ -297,7 +288,7 @@ public class ProductController {
     @GetMapping("/displayProduct")
     @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('USER')")
     public List<ProductResponseForUser> displayProduct() {
-        List<Product> listProduct = productService.displayProduct();
+        Set<Product> listProduct = productService.findByProductStatusIsTrue();
         List<ProductResponseForUser> productResponseForUserList = new ArrayList<>();
         for (Product pro : listProduct) {
             ProductResponseForUser proRes = new ProductResponseForUser();
@@ -305,6 +296,13 @@ public class ProductController {
             proRes.setProductName(pro.getProductName());
             proRes.setProductExportPrice(pro.getProductExportPrice());
             proRes.setProductImg(pro.getProductImg());
+            Set<String> listSubImage = new HashSet<>();
+            if (pro.getListSubImage().size()!=0){
+                for (Image img : pro.getListSubImage()) {
+                    listSubImage.add(img.getImageLink());
+                }
+            }
+            proRes.setListSubImage(listSubImage);
             productResponseForUserList.add(proRes);
         }
         return productResponseForUserList;
@@ -321,6 +319,13 @@ public class ProductController {
             prfu.setProductName(pro.getProductName());
             prfu.setProductExportPrice(pro.getProductExportPrice());
             prfu.setProductImg(pro.getProductImg());
+            Set<String> listSubImage = new HashSet<>();
+            if (pro.getListSubImage().size()!=0){
+                for (Image img : pro.getListSubImage()) {
+                    listSubImage.add(img.getImageLink());
+                }
+            }
+            prfu.setListSubImage(listSubImage);
             responseForUserList.add(prfu);
         }
         return responseForUserList;
@@ -328,28 +333,9 @@ public class ProductController {
 
     @GetMapping("/searchProductByColor")
     @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('USER')")
-    public List<ProductResponseForUser> searchProductByColorName(@RequestBody SearchProductByColorOrSize searchColor) {
-//        List<Product> listAllProduct = productService.findAll();
-//        List<Product> listProductSearchByColor = new ArrayList<>();
-//        for (Product pro : listAllProduct) {
-//            for (Color color : pro.getListColor()) {
-//                for (String str : searchColor.getSearch()) {
-//                    if (color.getColorId() == Integer.parseInt(str)) {
-//                        listProductSearchByColor.add(pro);
-//                    }
-//                }
-//            }
-//        }
-        List<Color> listColorAll = colorService.findAll();
-        Set<Color> listColor = new HashSet<>();
-        for (Color color : listColorAll) {
-            for (String strColor : searchColor.getSearch()) {
-                if (color.getColorId() == Integer.parseInt(strColor)) {
-                    listColor.add((Color) colorService.findById(Integer.parseInt(strColor)));
-                }
-            }
-        }
-        List<Product> listSearch = productService.findByListColor(listColor);
+    public List<ProductResponseForUser> searchProductByColorName(@RequestBody SearchProductByColorOrSize search) {
+        Set<Color> listColor = colorService.findByColorIdIn(search.getSearch());
+        Set<Product> listSearch = productService.findByListColorIn(listColor);
 
         List<ProductResponseForUser> responseForUserList = new ArrayList<>();
         for (Product product : listSearch) {
@@ -358,6 +344,13 @@ public class ProductController {
             proRes.setProductName(product.getProductName());
             proRes.setProductExportPrice(product.getProductExportPrice());
             proRes.setProductImg(product.getProductImg());
+            Set<String> listSubImage = new HashSet<>();
+            if (product.getListSubImage().size()!=0){
+                for (Image img : product.getListSubImage()) {
+                    listSubImage.add(img.getImageLink());
+                }
+            }
+            proRes.setListSubImage(listSubImage);
             responseForUserList.add(proRes);
         }
         return responseForUserList;
@@ -365,25 +358,51 @@ public class ProductController {
 
     @GetMapping("/searchProductBySize")
     @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('USER')")
-    public List<ProductResponseForUser> searchProductBySizeName(@RequestBody SearchProductByColorOrSize searchSize) {
-        List<Product> listAllProduct = productService.findAll();
-        List<Product> listProductSearchBySize = new ArrayList<>();
-        for (Product pro : listAllProduct) {
-            for (Size size : pro.getListSize()){
-                for (String str : searchSize.getSearch()) {
-                    if (size.getSizeId() == Integer.parseInt(str)) {
-                        listProductSearchBySize.add(pro);
-                    }
-                }
-            }
-        }
+    public List<ProductResponseForUser> searchProductBySizeName(@RequestBody SearchProductByColorOrSize search) {
+        Set<Size> listSize = sizeService.findBySizeIdIn(search.getSearch());
+        Set<Product> listSearch = productService.findByListSizeIn(listSize);
+
         List<ProductResponseForUser> responseForUserList = new ArrayList<>();
-        for (Product product : listProductSearchBySize) {
+        for (Product product : listSearch) {
             ProductResponseForUser proRes = new ProductResponseForUser();
             proRes.setProductId(product.getProductId());
             proRes.setProductName(product.getProductName());
             proRes.setProductExportPrice(product.getProductExportPrice());
             proRes.setProductImg(product.getProductImg());
+            Set<String> listSubImage = new HashSet<>();
+            if (product.getListSubImage().size()!=0){
+                for (Image img : product.getListSubImage()) {
+                    listSubImage.add(img.getImageLink());
+                }
+            }
+            proRes.setListSubImage(listSubImage);
+            responseForUserList.add(proRes);
+        }
+        return responseForUserList;
+    }
+
+    @GetMapping("searchProductByColorSizePrice")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('USER')")
+    public List<ProductResponseForUser> findByListColorInAndListSizeInAndProductExportPriceBetween(@RequestBody SearchByPriceColorSize search) {
+        Set<Color> listColor = colorService.findByColorIdIn(search.getListColor());
+        Set<Size> listSize = sizeService.findBySizeIdIn(search.getListsize());
+        float min = search.getMin();
+        float max = search.getMax();
+        Set<Product> listSearch = productService.findByListColorInAndListSizeInAndProductExportPriceBetween(listColor, listSize, min, max);
+        List<ProductResponseForUser> responseForUserList = new ArrayList<>();
+        for (Product product : listSearch) {
+            ProductResponseForUser proRes = new ProductResponseForUser();
+            proRes.setProductId(product.getProductId());
+            proRes.setProductName(product.getProductName());
+            proRes.setProductExportPrice(product.getProductExportPrice());
+            proRes.setProductImg(product.getProductImg());
+            Set<String> listSubImage = new HashSet<>();
+            if (product.getListSubImage().size()!=0){
+                for (Image img : product.getListSubImage()) {
+                    listSubImage.add(img.getImageLink());
+                }
+            }
+            proRes.setListSubImage(listSubImage);
             responseForUserList.add(proRes);
         }
         return responseForUserList;

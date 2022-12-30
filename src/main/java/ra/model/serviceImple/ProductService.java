@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ra.model.entity.Color;
+import ra.model.entity.Size;
 import ra.model.repository.ProductRepository;
 import ra.model.service.IProductService;
 import ra.model.entity.Product;
@@ -24,23 +25,33 @@ public class ProductService implements IProductService<Product,Integer> {
     }
 
     @Override
-    public List<Product> getAllProductByCatalogId(int catId) {
-        return productRepository.getAllProductByCatalogId(catId);
-    }
-
-    @Override
-    public List<Product> displayProduct() {
-        return productRepository.displayProduct();
-    }
-
-    @Override
     public List<Product> searchProductByProductExportPriceBetween(float min, float max) {
         return productRepository.searchProductByProductExportPriceBetween(min, max);
     }
 
     @Override
-    public List<Product> findByListColor(Set<Color> listColor) {
-        return productRepository.findByListColor(listColor);
+    public Set<Product> findByListColorIn(Set<Color> listColor) {
+        return productRepository.findByListColorIn(listColor);
+    }
+
+    @Override
+    public Set<Product> findByListSizeIn(Set<Size> listSize) {
+        return productRepository.findByListSizeIn(listSize);
+    }
+
+    @Override
+    public Set<Product> findByListColorInAndListSizeInAndProductExportPriceBetween(Set<Color> listColor, Set<Size> listSize, float min, float max) {
+        return productRepository.findByListColorInAndListSizeInAndProductExportPriceBetween(listColor,listSize,min,max);
+    }
+
+    @Override
+    public Set<Product> findByCatalog_CatalogId(int catId) {
+        return productRepository.findByCatalog_CatalogId(catId);
+    }
+
+    @Override
+    public Set<Product> findByProductStatusIsTrue() {
+        return productRepository.findByProductStatusIsTrue();
     }
 
 

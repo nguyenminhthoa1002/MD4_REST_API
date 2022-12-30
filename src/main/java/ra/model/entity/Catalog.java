@@ -31,7 +31,7 @@ public class Catalog {
     @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDateTime catalogCreateDate;
     private boolean catalogStatus;
-    @OneToMany(mappedBy = "catalog", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "catalog")
     @JsonIgnore
     private Set<Product> listProduct = new HashSet<>();
 

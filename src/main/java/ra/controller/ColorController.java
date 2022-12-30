@@ -6,11 +6,14 @@ import org.springframework.web.bind.annotation.*;
 import ra.model.entity.Catalog;
 import ra.model.entity.Color;
 import ra.model.service.IColorService;
+import ra.payload.request.SearchProductByColorOrSize;
 import ra.payload.respone.CatalogResponse;
 import ra.payload.respone.ColorResponse;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 @CrossOrigin(origins = "http://localhost:8080")
 @RestController
@@ -60,6 +63,12 @@ public class ColorController {
     @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public List<Color> searchColor(@RequestParam("searchName") String searchName) {
         return colorService.searchColor(searchName);
+    }
+
+    @PostMapping("getListColorForSearch")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+    public Set<Color> findByColorIdIn(@RequestBody SearchProductByColorOrSize search){
+        return colorService.findByColorIdIn(search.getSearch());
     }
 
     //    -------------------------- ROLE : USER --------------------

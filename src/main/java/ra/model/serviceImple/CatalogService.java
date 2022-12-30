@@ -10,6 +10,7 @@ import ra.payload.respone.CatalogResponse;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @Transactional(rollbackFor = SQLException.class)
@@ -29,6 +30,16 @@ public class CatalogService implements ICatalogService<Catalog,Integer> {
     @Override
     public List<Catalog> getCatalogForCreateProduct() {
         return catalogRepository.getCatalogForCreateProduct();
+    }
+
+    @Override
+    public Set<Catalog> findByCatalogIdIn(int[] listCatalog) {
+        return catalogRepository.findByCatalogIdIn(listCatalog);
+    }
+
+    @Override
+    public List<Catalog> getCatalogForCreatCatalog() {
+        return catalogRepository.getCatalogForCreatCatalog();
     }
 
     @Override

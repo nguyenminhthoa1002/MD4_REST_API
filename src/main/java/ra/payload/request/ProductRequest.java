@@ -1,5 +1,7 @@
 package ra.payload.request;
 
+import ra.model.entity.Image;
+
 public class ProductRequest {
     private String productName;
     private String productDescription;
@@ -7,8 +9,9 @@ public class ProductRequest {
     private String productImg;
     private int catalogId;
     private boolean productStatus;
-    private String[] colorStrArr = new String[50];
-    private String[] sizeStrArr = new String[50];
+    private int[] colorStrArr = new int[50];
+    private int[] sizeStrArr = new int[50];
+    private String[] listSubImage = new String[50];
 
 
     public boolean isProductStatus() {
@@ -52,19 +55,19 @@ public class ProductRequest {
     }
 
 
-    public String[] getColorStrArr() {
+    public int[] getColorStrArr() {
         return colorStrArr;
     }
 
-    public void setColorStrArr(String[] colorStrArr) {
+    public void setColorStrArr(int[] colorStrArr) {
         this.colorStrArr = colorStrArr;
     }
 
-    public String[] getSizeStrArr() {
+    public int[] getSizeStrArr() {
         return sizeStrArr;
     }
 
-    public void setSizeStrArr(String[] sizeStrArr) {
+    public void setSizeStrArr(int[] sizeStrArr) {
         this.sizeStrArr = sizeStrArr;
     }
 
@@ -74,5 +77,13 @@ public class ProductRequest {
 
     public void setCatalogId(int catalogId) {
         this.catalogId = catalogId;
+    }
+
+    public String[] getListSubImage() {
+        return listSubImage;
+    }
+
+    public void setListSubImage(String[] listSubImage) {
+        this.listSubImage = listSubImage;
     }
 }

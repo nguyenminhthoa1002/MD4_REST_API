@@ -1,13 +1,14 @@
 package ra.payload.request;
 
-public class SearchProductByColorOrSize {
-    private String[] search = new String[50];
 
-    public String[] getSearch() {
+public class SearchProductByColorOrSize {
+    private int[] search = new int[50];
+
+    public int[] getSearch() {
         return search;
     }
 
-    public void setSearch(String[] search) {
+    public void setSearch(int[] search) {
         this.search = search;
     }
 }

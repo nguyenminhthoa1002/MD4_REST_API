@@ -6,11 +6,12 @@ import org.springframework.web.bind.annotation.*;
 import ra.model.entity.Color;
 import ra.model.entity.Size;
 import ra.model.service.ISizeService;
-import ra.payload.respone.ColorResponse;
+import ra.payload.request.SearchProductByColorOrSize;
 import ra.payload.respone.SizeResponse;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @CrossOrigin(origins = "http://localhost:8080")
 @RestController
@@ -60,6 +61,12 @@ public class SizeController {
     @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public List<Size> searchSize(@RequestParam("searchName") String searchName) {
         return sizeService.searchSize(searchName);
+    }
+
+    @PostMapping("getListSizeForSearch")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+    public Set<Color> findBySizeIdIn(@RequestBody SearchProductByColorOrSize search){
+        return sizeService.findBySizeIdIn(search.getSearch());
     }
 
     //    -------------------------- ROLE : USER --------------------

@@ -8,7 +8,7 @@ public class CatalogUpdateRequest {
     private int catalogParentId;
     private LocalDateTime catalogCreateDate;
     private boolean catalogStatus;
-    private String[] strArr = new String[50];
+    private int[] strArr = new int[50];
 
     public String getCatalogName() {
         return catalogName;
@@ -50,11 +50,11 @@ public class CatalogUpdateRequest {
         this.catalogStatus = catalogStatus;
     }
 
-    public String[] getStrArr() {
+    public int[] getStrArr() {
         return strArr;
     }
 
-    public void setStrArr(String[] strArr) {
+    public void setStrArr(int[] strArr) {
         this.strArr = strArr;
     }
 }

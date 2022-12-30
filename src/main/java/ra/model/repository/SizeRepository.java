@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import ra.model.entity.Size;
 
 import java.util.List;
+import java.util.Set;
 
 @Repository
 public interface SizeRepository extends JpaRepository<Size,Integer> {
@@ -13,5 +14,7 @@ public interface SizeRepository extends JpaRepository<Size,Integer> {
 
     @Query(value = "select * from size where sizeStatus = 1",nativeQuery = true)
     List<Size> getSizeForUser();
+    Set<Size> findBySizeIdIn(int[] listSize);
+
 
 }

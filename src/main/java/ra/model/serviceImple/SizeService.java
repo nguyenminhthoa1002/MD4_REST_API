@@ -9,6 +9,7 @@ import ra.model.service.ISizeService;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @Transactional(rollbackFor = SQLException.class)
@@ -46,5 +47,10 @@ public class SizeService implements ISizeService<Size,Integer> {
     @Override
     public List<Size> getSizeForUser() {
         return sizeRepository.getSizeForUser();
+    }
+
+    @Override
+    public Set<Size> findBySizeIdIn(int[] listSize) {
+        return sizeRepository.findBySizeIdIn(listSize);
     }
 }

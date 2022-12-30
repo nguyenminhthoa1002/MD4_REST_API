@@ -23,7 +23,7 @@ public class Color {
     private String colorHex;
     private String colorName;
     private boolean colorStatus;
-    @OneToMany(mappedBy = "color", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "color")
     @JsonIgnore
     private Set<ProductDetail> listProductDetail = new HashSet<>();
 }

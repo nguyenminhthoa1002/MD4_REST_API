@@ -32,7 +32,7 @@ public class Product {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "catalogId", referencedColumnName = "catalogId")
     private Catalog catalog;
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "product")
     private Set<ProductDetail> listProductDetail = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -42,5 +42,8 @@ public class Product {
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "Product_Size", joinColumns = @JoinColumn(name = "productId"), inverseJoinColumns = @JoinColumn(name = "sizeId"))
     private Set<Size> listSize = new HashSet<>();
+
+    @OneToMany(mappedBy = "product")
+    private Set<Image> listSubImage = new HashSet<>();
 
 }

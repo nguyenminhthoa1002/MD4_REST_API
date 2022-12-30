@@ -1,19 +1,22 @@
 package ra.payload.respone;
 
+import java.util.Set;
+
 public class ProductResponseForUser {
     private int productId;
     private String productName;
     private float productExportPrice;
     private String productImg;
-
+    private Set<String> listSubImage;
     public ProductResponseForUser() {
     }
 
-    public ProductResponseForUser(int productId, String productName, float productExportPrice, String productImg) {
+    public ProductResponseForUser(int productId, String productName, float productExportPrice, String productImg, Set<String> listSubImage) {
         this.productId = productId;
         this.productName = productName;
         this.productExportPrice = productExportPrice;
         this.productImg = productImg;
+        this.listSubImage = listSubImage;
     }
 
     public int getProductId() {
@@ -46,5 +49,13 @@ public class ProductResponseForUser {
 
     public void setProductImg(String productImg) {
         this.productImg = productImg;
+    }
+
+    public Set<String> getListSubImage() {
+        return listSubImage;
+    }
+
+    public void setListSubImage(Set<String> listSubImage) {
+        this.listSubImage = listSubImage;
     }
 }

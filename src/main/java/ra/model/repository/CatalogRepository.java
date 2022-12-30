@@ -8,6 +8,7 @@ import ra.model.entity.Catalog;
 import ra.payload.respone.CatalogResponse;
 
 import java.util.List;
+import java.util.Set;
 
 @Repository
 public interface CatalogRepository extends JpaRepository<Catalog, Integer> {
@@ -15,6 +16,8 @@ public interface CatalogRepository extends JpaRepository<Catalog, Integer> {
 
     @Query(value = "from Catalog c where c.catalogParentId=:catalogId")
     List<Catalog> findCatalogChild(@Param("catalogId") int catalogId);
+
+    Set<Catalog> findByCatalogIdIn(int[] listCatalog);
 
     @Query(value = "WITH recursive TEMPDATA(catalogId,catalogName,catalogDescription,catalogParentId,catalogParentName,catalogCreateDate,catalogStatus)\n" +
             "                       AS (SELECT c.catalogId,\n" +
@@ -41,4 +44,11 @@ public interface CatalogRepository extends JpaRepository<Catalog, Integer> {
             "                                                        group by p.catalogId )",nativeQuery = true)
     List<Catalog> getCatalogForCreateProduct();
 
+    @Query(value = "select cat.catalogId,cat.catalogName,cat.catalogDescription,cat.catalogParentId,cat.catalogCreateDate,cat.catalogStatus,cat.catalogParentName\n" +
+            "    from catalog cat\n" +
+            "    where cat.catalogStatus = 1\n" +
+            "      and cat.catalogId not in (select c.catalogId\n" +
+            "                                from catalog c\n" +
+            "                                         inner join product p on c.catalogId = p.catalogId);\n",nativeQuery = true)
+    List<Catalog> getCatalogForCreatCatalog();
 }

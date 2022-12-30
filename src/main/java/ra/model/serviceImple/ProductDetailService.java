@@ -9,14 +9,13 @@ import ra.model.service.IProductDetailService;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @Transactional(rollbackFor = SQLException.class)
 public class ProductDetailService implements IProductDetailService<ProductDetail,Integer> {
     @Autowired
     private ProductDetailRepository productDetailRepository;
-
-
 
     @Override
     public List<ProductDetail> findAll() {
@@ -35,11 +34,19 @@ public class ProductDetailService implements IProductDetailService<ProductDetail
 
     @Override
     public void delete(Integer id) {
-        productDetailRepository.deleteById(id);
+        ProductDetail pdDelate = findById(id);
+        pdDelate.setProductDetailStatus(false);
+        productDetailRepository.save(pdDelate);
+    }
+
+
+    @Override
+    public Set<ProductDetail> findByProduct_ProductId(int proId) {
+        return productDetailRepository.findByProduct_ProductId(proId);
     }
 
     @Override
-    public List<ProductDetail> searchProductDetail(int searchName) {
-        return productDetailRepository.searchProduct(searchName);
+    public Set<ProductDetail> findByColor_ColorNameOrSize_SizeName(String colorName, String sizeName) {
+        return productDetailRepository.findByColor_ColorNameOrSize_SizeName(colorName,sizeName);
     }
 }

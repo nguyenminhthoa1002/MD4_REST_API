@@ -31,7 +31,5 @@ public class ProductDetail {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "sizeId", referencedColumnName = "sizeId")
     private Size size;
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
-    private Set<Image> listSubImage = new HashSet<>();
     private boolean productDetailStatus;
 }

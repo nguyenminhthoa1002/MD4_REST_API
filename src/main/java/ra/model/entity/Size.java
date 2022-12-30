@@ -22,7 +22,7 @@ public class Size {
     private int sizeId;
     private String sizeName;
     private boolean sizeStatus;
-    @OneToMany(mappedBy = "size", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "size")
     @JsonIgnore
     private Set<ProductDetail> listProductDetail = new HashSet<>();
 }
