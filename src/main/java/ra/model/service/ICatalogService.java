@@ -1,5 +1,6 @@
 package ra.model.service;
 
+import org.springframework.data.repository.query.Param;
 import ra.model.entity.Catalog;
 import ra.payload.respone.CatalogResponse;
 
@@ -12,4 +13,6 @@ public interface ICatalogService<T,V> extends IShopService<T,V>{
     List<T> getCatalogForCreateProduct();
     Set<Catalog> findByCatalogIdIn(int[] listCatalog);
     List<Catalog> getCatalogForCreatCatalog();
+    List<Catalog> findAllParentById(int catPaId);
+    List<Catalog> findByCatalogParentId(int catalogId);
 }

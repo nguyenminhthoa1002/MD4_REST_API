@@ -13,4 +13,6 @@ import java.util.Set;
 public interface ImageRepository extends JpaRepository<Image,Integer> {
     @Query(value = "select * from image where productId=:proId",nativeQuery = true)
     Set<Image> searchImageByProductId(@Param("proId") int proId);
+
+    Set<Image> findByImageLinkIn(String[] listSubImage);
 }

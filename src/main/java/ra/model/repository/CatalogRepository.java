@@ -17,6 +17,8 @@ public interface CatalogRepository extends JpaRepository<Catalog, Integer> {
     @Query(value = "from Catalog c where c.catalogParentId=:catalogId")
     List<Catalog> findCatalogChild(@Param("catalogId") int catalogId);
 
+    List<Catalog> findByCatalogParentId(int catalogId);
+
     Set<Catalog> findByCatalogIdIn(int[] listCatalog);
 
     @Query(value = "WITH recursive TEMPDATA(catalogId,catalogName,catalogDescription,catalogParentId,catalogParentName,catalogCreateDate,catalogStatus)\n" +
@@ -51,4 +53,31 @@ public interface CatalogRepository extends JpaRepository<Catalog, Integer> {
             "                                from catalog c\n" +
             "                                         inner join product p on c.catalogId = p.catalogId);\n",nativeQuery = true)
     List<Catalog> getCatalogForCreatCatalog();
+
+    @Query(value = "WITH recursive TEMPDATA(catalogId, catalogName, catalogDescription, catalogParentId, catalogParentName,\n" +
+            "                        catalogCreateDate, catalogStatus)\n" +
+            "                   AS (SELECT c.catalogId,\n" +
+            "                              c.catalogName,\n" +
+            "                              c.catalogDescription,\n" +
+            "                              c.catalogParentId,\n" +
+            "                              c.catalogParentName,\n" +
+            "                              c.catalogCreateDate,\n" +
+            "                              c.catalogStatus\n" +
+            "                       FROM catalog c\n" +
+            "                       WHERE catalogId = :catPaId\n" +
+            "                       union all\n" +
+            "                       select child.catalogId,\n" +
+            "                              child.catalogName,\n" +
+            "                              child.catalogDescription,\n" +
+            "                              child.catalogParentId,\n" +
+            "                              child.catalogParentName,\n" +
+            "                              child.catalogCreateDate,\n" +
+            "                              child.catalogStatus\n" +
+            "                       from TEMPDATA p\n" +
+            "                                inner join catalog child on p.catalogParentId= child.catalogId)\n" +
+            "SELECT *\n" +
+            "FROM TEMPDATA where catalogId not in (:catPaId)",nativeQuery = true)
+    List<Catalog> findAllParentById(@Param("catPaId") int catPaId);
+
+
 }

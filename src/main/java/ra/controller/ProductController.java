@@ -27,6 +27,8 @@ public class ProductController {
     private ICatalogService catalogService;
     @Autowired
     private IImageService imageService;
+    @Autowired
+    private IProductDetailService productDetailService;
 
     //    -------------------------- ROLE : ADMIN & MODERATOR --------------------
     @GetMapping
@@ -48,7 +50,7 @@ public class ProductController {
                 listSubImageString.add(image.getImageLink());
             }
             ProductResponse productResponse = new ProductResponse(pro.getProductId(), pro.getProductName(), pro.getProductDescription(),
-                    pro.getProductImportPrice(), pro.getProductExportPrice(), pro.getTotalQuantity(),pro.getProductImg(), pro.getCatalog().getCatalogName(),
+                    pro.getProductImportPrice(), pro.getProductExportPrice(), pro.getTotalQuantity(), pro.getProductImg(), pro.getCatalog().getCatalogName(),
                     pro.getProductCreateDate(), pro.isProductStatus(), listColorName, listSizeName, listSubImageString);
             listProductResponse.add(productResponse);
         }
@@ -72,7 +74,7 @@ public class ProductController {
             listSubImageString.add(image.getImageLink());
         }
         ProductResponse productResponse = new ProductResponse(pro.getProductId(), pro.getProductName(), pro.getProductDescription(),
-                pro.getProductImportPrice(), pro.getProductExportPrice(), pro.getTotalQuantity(),pro.getProductImg(), pro.getCatalog().getCatalogName(),
+                pro.getProductImportPrice(), pro.getProductExportPrice(), pro.getTotalQuantity(), pro.getProductImg(), pro.getCatalog().getCatalogName(),
                 pro.getProductCreateDate(), pro.isProductStatus(), listColorName, listSizeName, listSubImageString);
         return productResponse;
     }
@@ -127,12 +129,14 @@ public class ProductController {
     public ProductResponse updateProduct(@PathVariable("productId") int productId, @RequestBody ProductRequest product) {
         Product productUpdate = (Product) productService.findById(productId);
         Catalog catalog = (Catalog) catalogService.findById(product.getCatalogId());
+        Set<ProductDetail> listProDetail = productDetailService.findByProduct_ProductId(productId);
+        Set<ProductDetail> listProDetail1 = productDetailService.findByProductDetailIdIn(product.getProDetailArr());
 
         productUpdate.setProductName(product.getProductName());
         productUpdate.setProductDescription(product.getProductDescription());
         productUpdate.setProductImportPrice(product.getProductImportPrice());
         productUpdate.setProductExportPrice((float) (product.getProductImportPrice() * 1.2));
-        productUpdate.setProductImg(productUpdate.getProductImg());
+        productUpdate.setProductImg(product.getProductImg());
         LocalDateTime time = LocalDateTime.now();
         productUpdate.setProductCreateDate(time);
         productUpdate.setProductStatus(product.isProductStatus());
@@ -141,13 +145,29 @@ public class ProductController {
         productUpdate.setListColor(listColor);
         Set<Size> listSize = sizeService.findBySizeIdIn(product.getSizeStrArr());
         productUpdate.setListSize(listSize);
+        Set<Image> listSubImg = imageService.findByImageLinkIn(product.getListSubImage());
+        productUpdate.setListSubImage(listSubImg);
         productService.saveOrUpdate(productUpdate);
 
+        if (listProDetail != null) {
+            if (product.isProductStatus()) {
+                for (ProductDetail pd : listProDetail1) {
+                    pd.setProductDetailStatus(true);
+                    productDetailService.saveOrUpdate(pd);
+                }
+            } else {
+                for (ProductDetail pd : listProDetail) {
+                    pd.setProductDetailStatus(false);
+                    productDetailService.saveOrUpdate(pd);
+                }
+            }
+        }
+
         Set<String> listSubImage = new HashSet<>();
-        for (String str : product.getListSubImage()) {
-            listSubImage.add(str);
+        for (Image img : listSubImg) {
+            listSubImage.add(img.getImageLink());
             Image image = new Image();
-            image.setImageLink(str);
+            image.setImageLink(img.getImageLink());
             image.setImageStatus(true);
             image.setProduct(productUpdate);
             imageService.saveOrUpdate(image);
@@ -163,7 +183,7 @@ public class ProductController {
         }
 
         ProductResponse productResponse = new ProductResponse(productUpdate.getProductId(), productUpdate.getProductName(), productUpdate.getProductDescription(),
-                productUpdate.getProductImportPrice(), productUpdate.getProductExportPrice(), productUpdate.getTotalQuantity(),productUpdate.getProductImg(), productUpdate.getCatalog().getCatalogName(),
+                productUpdate.getProductImportPrice(), productUpdate.getProductExportPrice(), productUpdate.getTotalQuantity(), productUpdate.getProductImg(), productUpdate.getCatalog().getCatalogName(),
                 productUpdate.getProductCreateDate(), productUpdate.isProductStatus(), listColorName, listSizeName, listSubImage);
         return productResponse;
     }
@@ -297,7 +317,7 @@ public class ProductController {
             proRes.setProductExportPrice(pro.getProductExportPrice());
             proRes.setProductImg(pro.getProductImg());
             Set<String> listSubImage = new HashSet<>();
-            if (pro.getListSubImage().size()!=0){
+            if (pro.getListSubImage().size() != 0) {
                 for (Image img : pro.getListSubImage()) {
                     listSubImage.add(img.getImageLink());
                 }
@@ -320,7 +340,7 @@ public class ProductController {
             prfu.setProductExportPrice(pro.getProductExportPrice());
             prfu.setProductImg(pro.getProductImg());
             Set<String> listSubImage = new HashSet<>();
-            if (pro.getListSubImage().size()!=0){
+            if (pro.getListSubImage().size() != 0) {
                 for (Image img : pro.getListSubImage()) {
                     listSubImage.add(img.getImageLink());
                 }
@@ -345,7 +365,7 @@ public class ProductController {
             proRes.setProductExportPrice(product.getProductExportPrice());
             proRes.setProductImg(product.getProductImg());
             Set<String> listSubImage = new HashSet<>();
-            if (product.getListSubImage().size()!=0){
+            if (product.getListSubImage().size() != 0) {
                 for (Image img : product.getListSubImage()) {
                     listSubImage.add(img.getImageLink());
                 }
@@ -370,7 +390,7 @@ public class ProductController {
             proRes.setProductExportPrice(product.getProductExportPrice());
             proRes.setProductImg(product.getProductImg());
             Set<String> listSubImage = new HashSet<>();
-            if (product.getListSubImage().size()!=0){
+            if (product.getListSubImage().size() != 0) {
                 for (Image img : product.getListSubImage()) {
                     listSubImage.add(img.getImageLink());
                 }
@@ -397,7 +417,7 @@ public class ProductController {
             proRes.setProductExportPrice(product.getProductExportPrice());
             proRes.setProductImg(product.getProductImg());
             Set<String> listSubImage = new HashSet<>();
-            if (product.getListSubImage().size()!=0){
+            if (product.getListSubImage().size() != 0) {
                 for (Image img : product.getListSubImage()) {
                     listSubImage.add(img.getImageLink());
                 }

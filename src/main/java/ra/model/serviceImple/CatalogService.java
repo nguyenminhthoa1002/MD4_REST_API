@@ -43,6 +43,17 @@ public class CatalogService implements ICatalogService<Catalog,Integer> {
     }
 
     @Override
+    public List<Catalog> findAllParentById(int catPaId) {
+        return catalogRepository.findAllParentById(catPaId);
+    }
+
+    @Override
+    public List<Catalog> findByCatalogParentId(int catalogId) {
+        return catalogRepository.findByCatalogParentId(catalogId);
+    }
+
+
+    @Override
     public List<Catalog> findAll() {
         return catalogRepository.findAll();
     }

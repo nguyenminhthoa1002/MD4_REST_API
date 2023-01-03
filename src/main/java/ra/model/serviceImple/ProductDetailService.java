@@ -49,4 +49,14 @@ public class ProductDetailService implements IProductDetailService<ProductDetail
     public Set<ProductDetail> findByColor_ColorNameOrSize_SizeName(String colorName, String sizeName) {
         return productDetailRepository.findByColor_ColorNameOrSize_SizeName(colorName,sizeName);
     }
+
+    @Override
+    public ProductDetail findByColor_ColorHexAndSize_SizeName(String colorHex, String sizeName) {
+        return productDetailRepository.findByColor_ColorHexAndSize_SizeName(colorHex,sizeName);
+    }
+
+    @Override
+    public Set<ProductDetail> findByProductDetailIdIn(int[] listProductDetailId) {
+        return productDetailRepository.findByProductDetailIdIn(listProductDetailId);
+    }
 }

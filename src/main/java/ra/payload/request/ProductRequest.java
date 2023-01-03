@@ -12,6 +12,7 @@ public class ProductRequest {
     private int[] colorStrArr = new int[50];
     private int[] sizeStrArr = new int[50];
     private String[] listSubImage = new String[50];
+    private int[] proDetailArr = new int[50];
 
 
     public boolean isProductStatus() {
@@ -85,5 +86,13 @@ public class ProductRequest {
 
     public void setListSubImage(String[] listSubImage) {
         this.listSubImage = listSubImage;
+    }
+
+    public int[] getProDetailArr() {
+        return proDetailArr;
+    }
+
+    public void setProDetailArr(int[] proDetailArr) {
+        this.proDetailArr = proDetailArr;
     }
 }

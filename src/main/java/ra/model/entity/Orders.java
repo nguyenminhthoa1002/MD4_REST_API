@@ -7,7 +7,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -27,5 +30,8 @@ public class Orders {
     private float totalMoney;
     @OneToMany(mappedBy = "orders")
     @JsonIgnore
-    private Set<OrderDetail> listOrderDetail = new HashSet<>();
+    private List<OrderDetail> listOrderDetail = new ArrayList<>();
+    private String note;
+    private LocalDateTime createDate;
+    private int orderStatus;
 }

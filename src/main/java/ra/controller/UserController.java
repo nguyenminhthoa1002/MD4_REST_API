@@ -13,8 +13,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import ra.jwt.JwtTokenProvider;
 import ra.model.entity.ERole;
+import ra.model.entity.Orders;
 import ra.model.entity.Roles;
 import ra.model.entity.Users;
+import ra.model.service.IOrderService;
 import ra.model.service.IRoleService;
 import ra.model.service.IUserService;
 import ra.payload.request.ChangePassword;
@@ -26,6 +28,7 @@ import ra.payload.respone.MessageResponse;
 import ra.security.CustomUserDetailService;
 import ra.security.CustomUserDetails;
 
+import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -47,6 +50,8 @@ public class UserController {
     private IRoleService roleService;
     @Autowired
     private PasswordEncoder encoder;
+    @Autowired
+    private IOrderService orderService;
 
     //    ------------------    ĐĂNG KÝ   ----------------------
     @PostMapping("/register")
@@ -108,7 +113,10 @@ public class UserController {
             });
         }
         user.setListRoles(listRoles);
-        userService.saveOrUpdate(user);
+        Users userUpdate = (Users) userService.saveOrUpdate(user);
+        Orders orders = new Orders();
+        orders.setUsers(userUpdate);
+        orderService.saveOrUpdate(orders);
         return ResponseEntity.ok(new MessageResponse("User registered successfully"));
     }
 
@@ -129,6 +137,7 @@ public class UserController {
             //Lay cac quyen cua user
             List<String> listRoles = customUserDetail.getAuthorities().stream()
                     .map(item -> item.getAuthority()).collect(Collectors.toList());
+//            Orders orders = customUserDetail.getListOrder().get(customUserDetail.getListOrder().size()-1);
             return ResponseEntity.ok(new JwtResponse(jwt, customUserDetail.getUsername(), customUserDetail.getLastName(), customUserDetail.getFirstName(),
                     customUserDetail.getEmail(), customUserDetail.getPhone(), customUserDetail.getAddress(), listRoles));
         }
@@ -273,7 +282,7 @@ public class UserController {
         return ResponseEntity.ok(new MessageResponse("User registered successfully"));
     }
 
-    @PutMapping("updateUserForModerator")
+    @PutMapping("updateUserForModerator/{userId}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public ResponseEntity<?> updateUserForModerator(@PathVariable("userId") int userId, @RequestBody RegisterRequest registerRequest){
         Users userUpdateModerator = (Users) userService.findById(userId);
@@ -285,7 +294,7 @@ public class UserController {
     }
 
 //    ----------------------- ROLE : USER ------------------------
-    @PutMapping("updateUserForUser")
+    @PutMapping("updateUserForUser/{userId}")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> updateUserForUser(@PathVariable("userId") int userId, @RequestBody RegisterRequest registerRequest){
         if (userService.existsByEmail(registerRequest.getEmail())) {
@@ -320,4 +329,12 @@ public class UserController {
         }
         return ResponseEntity.ok(new MessageResponse("Change password successfully!"));
     }
+
+//    @PostMapping("logout")
+//    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('USER')")
+//    public ResponseEntity<?> logout(HttpSession session) {
+//        SecurityContextHolder.clearContext();
+//        session.invalidate();
+//        return ResponseEntity.ok(new MessageResponse("Logout successfully!"));
+//    }
 }

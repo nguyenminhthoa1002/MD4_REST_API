@@ -163,32 +163,34 @@ public class ProductDetailController {
     }
 
     //    -------------------------- ROLE : USER --------------------
-    @GetMapping("getProductDetailForPageByProductId")
+    @GetMapping("getProductDetailForPageByProductId/{proId}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
-    public InforForProductDetailPage getProductDetailForPageByProductId(@RequestParam("proId") int proId) {
+    public InforForProductDetailPage getProductDetailForPageByProductId(@PathVariable("proId") int proId) {
         Product pro = (Product) productService.findById(proId);
+        if (pro.isProductStatus()){
+            InforForProductDetailPage infor = new InforForProductDetailPage();
+            infor.setProductName(pro.getProductName());
+            infor.setProductDescription(pro.getProductDescription());
+            infor.setProductExportPrice(pro.getProductExportPrice());
+            infor.setProductImg(pro.getProductImg());
+            Set<String> listColorHex = new HashSet<>();
+            Set<String> listSizeName = new HashSet<>();
+            Set<String> listSubImg = new HashSet<>();
+            for (Image img : pro.getListSubImage()) {
+                listSubImg.add(img.getImageLink());
+            }
+            infor.setListSubImage(listSubImg);
+            for (Color color : pro.getListColor()) {
+                listColorHex.add(color.getColorHex());
+            }
+            infor.setListColorHex(listColorHex);
+            for (Size size : pro.getListSize()) {
+                listSizeName.add(size.getSizeName());
+            }
+            infor.setListSizeName(listSizeName);
 
-        InforForProductDetailPage infor = new InforForProductDetailPage();
-        infor.setProductName(pro.getProductName());
-        infor.setProductDescription(pro.getProductDescription());
-        infor.setProductExportPrice(pro.getProductExportPrice());
-        infor.setProductImg(pro.getProductImg());
-        Set<String> listColorHex = new HashSet<>();
-        Set<String> listSizeName = new HashSet<>();
-        Set<String> listSubImg = new HashSet<>();
-        for (Image img : pro.getListSubImage()) {
-            listSubImg.add(img.getImageLink());
+            return infor;
         }
-        infor.setListSubImage(listSubImg);
-        for (Color color : pro.getListColor()) {
-            listColorHex.add(color.getColorHex());
-        }
-        infor.setListColorHex(listColorHex);
-        for (Size size : pro.getListSize()) {
-            listSizeName.add(size.getSizeName());
-        }
-        infor.setListSizeName(listSizeName);
-
-        return infor;
+        return null;
     }
 }

@@ -45,4 +45,9 @@ public class ImageService implements IImageService<Image,Integer> {
     public Set<Image> searchImageByProductId(Integer productId) {
         return imageRepository.searchImageByProductId(productId);
     }
+
+    @Override
+    public Set<Image> findByImageLinkIn(String[] listSubImage) {
+        return imageRepository.findByImageLinkIn(listSubImage);
+    }
 }

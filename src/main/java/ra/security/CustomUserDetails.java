@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import ra.model.entity.Orders;
 import ra.model.entity.Users;
 
 import java.time.LocalDateTime;
@@ -30,6 +31,8 @@ public class CustomUserDetails implements UserDetails {
     private String address;
     private LocalDateTime userCreateDate;
     private boolean userStatus;
+//    private List<Orders> listOrder;
+
     private Collection<? extends GrantedAuthority> authorities;
 
     @Override
@@ -41,7 +44,7 @@ public class CustomUserDetails implements UserDetails {
         List<GrantedAuthority> listAuthority = users.getListRoles().stream()
                 .map(roles -> new SimpleGrantedAuthority(roles.getRoleName().name()))
                 .collect(Collectors.toList());
-        return new CustomUserDetails(users.getUserId(), users.getUserName(), users.getPassword(), users.getLastName(), users.getFirstName(), users.getEmail(), users.getPhone(), users.getAddress(), users.getUserCreateDate(), users.isUserStatus(), listAuthority);
+        return new CustomUserDetails(users.getUserId(), users.getUserName(), users.getPassword(), users.getLastName(), users.getFirstName(), users.getEmail(), users.getPhone(), users.getAddress(), users.getUserCreateDate(), users.isUserStatus(),listAuthority);
     }
 
     @Override

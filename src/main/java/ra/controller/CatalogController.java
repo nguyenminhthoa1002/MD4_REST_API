@@ -41,12 +41,18 @@ public class CatalogController {
     @PostMapping()
     @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public Catalog createCatalog(@RequestBody CatalogRequest catalog) {
-        Catalog catPaCreate = (Catalog) catalogService.findById(catalog.getCatalogParentId());
         Catalog catNew = new Catalog();
+        if (catalog.getCatalogParentId() == 0) {
+            catNew.setCatalogParentId(0);
+            catNew.setCatalogParentName("root");
+        } else {
+            Catalog catPaCreate = (Catalog) catalogService.findById(catalog.getCatalogParentId());
+            catNew.setCatalogParentId(catPaCreate.getCatalogId());
+            catNew.setCatalogParentName(catPaCreate.getCatalogName());
+        }
+
         catNew.setCatalogName(catalog.getCatalogName());
         catNew.setCatalogDescription(catalog.getCatalogDescription());
-        catNew.setCatalogParentId(catPaCreate.getCatalogId());
-        catNew.setCatalogParentName(catPaCreate.getCatalogName());
         LocalDateTime time = LocalDateTime.now();
         catNew.setCatalogCreateDate(time);
         catNew.setCatalogStatus(true);
@@ -61,11 +67,19 @@ public class CatalogController {
         return catalogService.findChildById(catalogId);
     }
 
+    @GetMapping("getListChildById/{catalogId}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+    public List<Catalog> findByCatalogParentId(@PathVariable("catalogId") int catalogId){
+        return catalogService.findByCatalogParentId(catalogId);
+    }
+
     @PutMapping("/{catalogId}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public Catalog updateCatalog(@PathVariable("catalogId") int catalogId, @RequestBody CatalogUpdateRequest catalog) {
         Catalog catUpdate = (Catalog) catalogService.findById(catalogId);
         List<Catalog> listChild = catalogService.findChildById(catalogId);
+        List<Catalog> listParent = catalogService.findAllParentById(catalogId);
+
         catUpdate.setCatalogName(catalog.getCatalogName());
         catUpdate.setCatalogDescription(catalog.getCatalogDescription());
         if (catalog.getCatalogParentId() == 0) {
@@ -79,16 +93,36 @@ public class CatalogController {
         LocalDateTime time = LocalDateTime.now();
         catUpdate.setCatalogCreateDate(time);
         catUpdate.setCatalogStatus(catalog.isCatalogStatus());
+        Set<Catalog> listChauUpdate = catalogService.findByCatalogIdIn(catalog.getStrArrChild());
+        if (listChauUpdate != null) {
+            if (catalog.isCatalogStatus()) {
+                for (Catalog catChau : listChauUpdate) {
+                    catChau.setCatalogStatus(true);
+                    catalogService.saveOrUpdate(catChau);
+                }
+            }
+        }
+        if (listParent != null && catalog.isCatalogStatus()) {
+            for (Catalog catPa : listParent) {
+                catPa.setCatalogStatus(true);
+                catalogService.saveOrUpdate(catPa);
+            }
+        }
         Set<Catalog> listChildUpdate = catalogService.findByCatalogIdIn(catalog.getStrArr());
         if (listChild != null) {
             if (catalog.isCatalogStatus()) {
                 for (Catalog catChild : listChildUpdate) {
-                    catChild.setCatalogParentName(catalog.getCatalogName());
                     catChild.setCatalogStatus(true);
+                    if (catChild.getCatalogParentId() == catalogId) {
+                        catChild.setCatalogParentName(catalog.getCatalogName());
+                    }
                     catalogService.saveOrUpdate(catChild);
                 }
             } else {
                 for (Catalog catChild : listChild) {
+                    if (catChild.getCatalogParentId() == catalogId) {
+                        catChild.setCatalogParentName(catalog.getCatalogName());
+                    }
                     catChild.setCatalogStatus(false);
                     catalogService.saveOrUpdate(catChild);
                 }

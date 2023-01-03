@@ -1,5 +1,8 @@
 package ra.payload.respone;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import ra.model.entity.Orders;
+
 import java.util.List;
 
 public class JwtResponse {
@@ -11,7 +14,22 @@ public class JwtResponse {
     private String email;
     private String phone;
     private String address;
+//    @JsonIgnore
+//    private Orders orders;
     private List<String> listRoles;
+
+//    public JwtResponse(String token, String userName, String lastName, String firstName, String email, String phone, String address, Orders orders, List<String> listRoles) {
+//        this.token = token;
+//        this.userName = userName;
+//        this.lastName = lastName;
+//        this.firstName = firstName;
+//        this.email = email;
+//        this.phone = phone;
+//        this.address = address;
+//        this.orders = orders;
+//        this.listRoles = listRoles;
+//    }
+
 
     public JwtResponse(String token, String userName, String lastName, String firstName, String email, String phone, String address, List<String> listRoles) {
         this.token = token;
@@ -95,4 +113,12 @@ public class JwtResponse {
     public void setListRoles(List<String> listRoles) {
         this.listRoles = listRoles;
     }
+
+//    public Orders getOrders() {
+//        return orders;
+//    }
+//
+//    public void setOrders(Orders orders) {
+//        this.orders = orders;
+//    }
 }
