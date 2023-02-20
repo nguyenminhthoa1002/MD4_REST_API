@@ -20,6 +20,7 @@ public class Users {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int userId;
     private String userName;
+    private String avatar;
     @JsonIgnore
     private String password;
     private String lastName;

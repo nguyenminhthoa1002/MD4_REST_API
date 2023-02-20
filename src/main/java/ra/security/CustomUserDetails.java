@@ -24,6 +24,7 @@ public class CustomUserDetails implements UserDetails {
     private String userName;
     @JsonIgnore
     private String password;
+    private String avatar;
     private String lastName;
     private String firstName;
     private String email;
@@ -31,7 +32,7 @@ public class CustomUserDetails implements UserDetails {
     private String address;
     private LocalDateTime userCreateDate;
     private boolean userStatus;
-//    private List<Orders> listOrder;
+    private List<Orders> listOrder;
 
     private Collection<? extends GrantedAuthority> authorities;
 
@@ -44,7 +45,7 @@ public class CustomUserDetails implements UserDetails {
         List<GrantedAuthority> listAuthority = users.getListRoles().stream()
                 .map(roles -> new SimpleGrantedAuthority(roles.getRoleName().name()))
                 .collect(Collectors.toList());
-        return new CustomUserDetails(users.getUserId(), users.getUserName(), users.getPassword(), users.getLastName(), users.getFirstName(), users.getEmail(), users.getPhone(), users.getAddress(), users.getUserCreateDate(), users.isUserStatus(),listAuthority);
+        return new CustomUserDetails(users.getUserId(), users.getUserName(), users.getPassword(), users.getAvatar(), users.getLastName(), users.getFirstName(), users.getEmail(), users.getPhone(), users.getAddress(), users.getUserCreateDate(), users.isUserStatus(),users.getListOrder(),listAuthority);
     }
 
     @Override

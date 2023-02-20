@@ -9,8 +9,6 @@ public class CatalogRequest {
     private LocalDateTime catalogCreateDate;
     private boolean catalogStatus;
 
-    public CatalogRequest() {
-    }
 
     public CatalogRequest(String catalogName, String catalogDescription, int catalogParentId, LocalDateTime catalogCreateDate, boolean catalogStatus) {
         this.catalogName = catalogName;

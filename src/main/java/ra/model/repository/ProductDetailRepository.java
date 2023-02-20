@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ra.model.entity.ProductDetail;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -18,6 +19,9 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
 
     ProductDetail findByColor_ColorHexAndSize_SizeName(String colorHex, String sizeName);
 
-    Set<ProductDetail> findByProductDetailIdIn(int[] listProductDetailId);
+    Set<ProductDetail> findByProductDetailIdIn(ArrayList<Integer> listProductDetailId);
+
+    ProductDetail findByProduct_ProductIdAndColor_ColorIdAndSize_SizeId(int productId, int colorId, int sizeId);
+
 
 }

@@ -17,8 +17,6 @@ public class ImageService implements IImageService<Image,Integer> {
     @Autowired
     private ImageRepository imageRepository;
 
-
-
     @Override
     public List<Image> findAll() {
         return imageRepository.findAll();
@@ -50,4 +48,10 @@ public class ImageService implements IImageService<Image,Integer> {
     public Set<Image> findByImageLinkIn(String[] listSubImage) {
         return imageRepository.findByImageLinkIn(listSubImage);
     }
+
+    @Override
+    public Image findByImageLink(String link) {
+        return imageRepository.findByImageLink(link);
+    }
+
 }

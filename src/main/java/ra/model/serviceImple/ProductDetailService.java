@@ -8,6 +8,7 @@ import ra.model.repository.ProductDetailRepository;
 import ra.model.service.IProductDetailService;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -56,7 +57,13 @@ public class ProductDetailService implements IProductDetailService<ProductDetail
     }
 
     @Override
-    public Set<ProductDetail> findByProductDetailIdIn(int[] listProductDetailId) {
+    public Set<ProductDetail> findByProductDetailIdIn(ArrayList<Integer> listProductDetailId) {
         return productDetailRepository.findByProductDetailIdIn(listProductDetailId);
+    }
+
+
+    @Override
+    public ProductDetail findByProduct_ProductIdAndColor_ColorIdAndSize_SizeId(int productId, int colorId, int sizeId) {
+        return productDetailRepository.findByProduct_ProductIdAndColor_ColorIdAndSize_SizeId(productId,colorId,sizeId);
     }
 }

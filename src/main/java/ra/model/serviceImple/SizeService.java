@@ -8,6 +8,7 @@ import ra.model.repository.SizeRepository;
 import ra.model.service.ISizeService;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -50,7 +51,9 @@ public class SizeService implements ISizeService<Size,Integer> {
     }
 
     @Override
-    public Set<Size> findBySizeIdIn(int[] listSize) {
+    public Set<Size> findBySizeIdIn(ArrayList<Integer> listSize) {
         return sizeRepository.findBySizeIdIn(listSize);
     }
+
+
 }

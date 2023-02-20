@@ -65,6 +65,7 @@ public class UserController {
         Users user = new Users();
         user.setUserName(signupRequest.getUserName());
         user.setPassword(encoder.encode(signupRequest.getPassword()));
+        user.setAvatar(signupRequest.getAvatar());
         user.setLastName(signupRequest.getLastName());
         user.setFirstName(signupRequest.getFirstName());
         user.setEmail(signupRequest.getEmail());
@@ -137,9 +138,9 @@ public class UserController {
             //Lay cac quyen cua user
             List<String> listRoles = customUserDetail.getAuthorities().stream()
                     .map(item -> item.getAuthority()).collect(Collectors.toList());
-//            Orders orders = customUserDetail.getListOrder().get(customUserDetail.getListOrder().size()-1);
-            return ResponseEntity.ok(new JwtResponse(jwt, customUserDetail.getUsername(), customUserDetail.getLastName(), customUserDetail.getFirstName(),
-                    customUserDetail.getEmail(), customUserDetail.getPhone(), customUserDetail.getAddress(), listRoles));
+            Orders orders = customUserDetail.getListOrder().get(customUserDetail.getListOrder().size()-1);
+            return ResponseEntity.ok(new JwtResponse(jwt, customUserDetail.getUsername(), customUserDetail.getAvatar(), customUserDetail.getLastName(), customUserDetail.getFirstName(),
+                    customUserDetail.getEmail(), customUserDetail.getPhone(), customUserDetail.getAddress(), orders,listRoles));
         }
     }
 

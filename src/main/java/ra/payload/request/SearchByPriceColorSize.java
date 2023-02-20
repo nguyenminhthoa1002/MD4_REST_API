@@ -1,24 +1,26 @@
 package ra.payload.request;
 
+import java.util.ArrayList;
+
 public class SearchByPriceColorSize {
-    private int[] listsize;
-    private int[] listColor;
+    private ArrayList<Integer> listsize = new ArrayList<>();
+    private ArrayList<Integer> listColor = new ArrayList<>();
     private float min;
     private float max;
 
-    public int[] getListsize() {
+    public ArrayList<Integer> getListsize() {
         return listsize;
     }
 
-    public void setListsize(int[] listsize) {
+    public void setListsize(ArrayList<Integer> listsize) {
         this.listsize = listsize;
     }
 
-    public int[] getListColor() {
+    public ArrayList<Integer> getListColor() {
         return listColor;
     }
 
-    public void setListColor(int[] listColor) {
+    public void setListColor(ArrayList<Integer> listColor) {
         this.listColor = listColor;
     }
 

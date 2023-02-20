@@ -8,6 +8,7 @@ import ra.model.service.IColorService;
 import ra.model.repository.ColorRepository;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -28,7 +29,7 @@ public class ColorService implements IColorService<Color,Integer> {
     }
 
     @Override
-    public Set<Color> findByColorIdIn(int[] listColor) {
+    public Set<Color> findByColorIdIn(ArrayList<Integer> listColor) {
         return colorRepository.findByColorIdIn(listColor);
     }
 

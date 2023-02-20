@@ -1,6 +1,7 @@
 package ra.payload.request;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 public class CatalogUpdateRequest {
     private String catalogName;
@@ -8,8 +9,10 @@ public class CatalogUpdateRequest {
     private int catalogParentId;
     private LocalDateTime catalogCreateDate;
     private boolean catalogStatus;
-    private int[] strArr = new int[50];
-    private int[] strArrChild = new int[50];
+//    private int[] strArr = new int[50];
+    private ArrayList<Integer> strArr= new ArrayList<>();
+//    private int[] strArrChild = new int[50];
+    private ArrayList<Integer> strArrChild= new ArrayList<>();
 
     public String getCatalogName() {
         return catalogName;
@@ -51,19 +54,19 @@ public class CatalogUpdateRequest {
         this.catalogStatus = catalogStatus;
     }
 
-    public int[] getStrArr() {
+    public ArrayList<Integer> getStrArr() {
         return strArr;
     }
 
-    public void setStrArr(int[] strArr) {
+    public void setStrArr(ArrayList<Integer> strArr) {
         this.strArr = strArr;
     }
 
-    public int[] getStrArrChild() {
+    public ArrayList<Integer> getStrArrChild() {
         return strArrChild;
     }
 
-    public void setStrArrChild(int[] strArrChild) {
+    public void setStrArrChild(ArrayList<Integer> strArrChild) {
         this.strArrChild = strArrChild;
     }
 }

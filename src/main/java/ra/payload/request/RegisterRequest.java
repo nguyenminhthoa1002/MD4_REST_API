@@ -6,6 +6,7 @@ import java.util.Set;
 public class RegisterRequest {
     private String userName;
     private String password;
+    private String avatar;
     private String lastName;
     private String firstName;
     private String email;
@@ -93,5 +94,13 @@ public class RegisterRequest {
 
     public void setListRoles(Set<String> listRoles) {
         this.listRoles = listRoles;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 }

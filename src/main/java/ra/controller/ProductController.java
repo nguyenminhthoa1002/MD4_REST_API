@@ -145,32 +145,69 @@ public class ProductController {
         productUpdate.setListColor(listColor);
         Set<Size> listSize = sizeService.findBySizeIdIn(product.getSizeStrArr());
         productUpdate.setListSize(listSize);
-        Set<Image> listSubImg = imageService.findByImageLinkIn(product.getListSubImage());
-        productUpdate.setListSubImage(listSubImg);
-        productService.saveOrUpdate(productUpdate);
+
+        List<Image> listSubImage = imageService.findAll();
+        Set<String> listImageStrExist = new HashSet<>();
+
+        for (Image img : listSubImage) {
+            listImageStrExist.add(img.getImageLink());
+            listImageStrExist.add(img.getImageLink());
+        }
+
+//        Request product truyen len
+        Set<String> listSub = new HashSet<>();
+        for (String img : product.getListSubImage()) {
+            listSub.add(img);
+        }
+
+        ArrayList<String> listNewImgLink = new ArrayList<>();
+        for (String imgLink : listSub) {
+            boolean test = listImageStrExist.add(imgLink);
+            if (test) {
+                listNewImgLink.add(imgLink);
+            }
+        }
+
+        for (String strLinkImg : listNewImgLink) {
+            Image image = new Image();
+            image.setImageLink(strLinkImg);
+            image.setImageStatus(true);
+            image.setProduct(productUpdate);
+            imageService.saveOrUpdate(image);
+        }
+
+
+        Set<Image> listSubImgUpdate = new HashSet<>();
+        for (String strSubImage : product.getListSubImage()) {
+            Image subImg = imageService.findByImageLink(strSubImage);
+            listSubImgUpdate.add(subImg);
+        }
+        productUpdate.setListSubImage(listSubImgUpdate);
 
         if (listProDetail != null) {
             if (product.isProductStatus()) {
-                for (ProductDetail pd : listProDetail1) {
+                int totalQuantity = 0;
+                for (ProductDetail pd : listProDetail) {
                     pd.setProductDetailStatus(true);
+                    totalQuantity += pd.getQuantity();
                     productDetailService.saveOrUpdate(pd);
                 }
+                productUpdate.setTotalQuantity(totalQuantity);
             } else {
                 for (ProductDetail pd : listProDetail) {
                     pd.setProductDetailStatus(false);
                     productDetailService.saveOrUpdate(pd);
                 }
+                productUpdate.setTotalQuantity(0);
             }
         }
 
-        Set<String> listSubImage = new HashSet<>();
-        for (Image img : listSubImg) {
-            listSubImage.add(img.getImageLink());
-            Image image = new Image();
-            image.setImageLink(img.getImageLink());
-            image.setImageStatus(true);
-            image.setProduct(productUpdate);
-            imageService.saveOrUpdate(image);
+        productService.saveOrUpdate(productUpdate);
+
+
+        Set<String> listSubImageResponse = new HashSet<>();
+        for (Image img : listSubImgUpdate) {
+            listSubImageResponse.add(img.getImageLink());
         }
 
         Set<String> listColorName = new HashSet<>();
@@ -184,7 +221,7 @@ public class ProductController {
 
         ProductResponse productResponse = new ProductResponse(productUpdate.getProductId(), productUpdate.getProductName(), productUpdate.getProductDescription(),
                 productUpdate.getProductImportPrice(), productUpdate.getProductExportPrice(), productUpdate.getTotalQuantity(), productUpdate.getProductImg(), productUpdate.getCatalog().getCatalogName(),
-                productUpdate.getProductCreateDate(), productUpdate.isProductStatus(), listColorName, listSizeName, listSubImage);
+                productUpdate.getProductCreateDate(), productUpdate.isProductStatus(), listColorName, listSizeName, listSubImageResponse);
         return productResponse;
     }
 
@@ -192,6 +229,16 @@ public class ProductController {
     @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public void deleteProduct(@PathVariable("productId") int productId) {
         productService.delete(productId);
+        Product productDelete = (Product) productService.findById(productId);
+        Set<ProductDetail> listProDetail = productDetailService.findByProduct_ProductId(productId);
+        if(listProDetail!=null) {
+            for (ProductDetail pd : listProDetail) {
+                pd.setProductDetailStatus(false);
+                productDetailService.saveOrUpdate(pd);
+            }
+            productDelete.setTotalQuantity(0);
+        }
+        productService.saveOrUpdate(productDelete);
     }
 
     @GetMapping("search")

@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import ra.model.entity.Color;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -14,5 +15,5 @@ public interface ColorRepository extends JpaRepository<Color,Integer> {
 
     @Query(value = "select * from color where colorStatus = 1",nativeQuery = true)
     List<Color> getColorForUser();
-    Set<Color> findByColorIdIn(int[] listColor);
+    Set<Color> findByColorIdIn(ArrayList<Integer> listColor);
 }

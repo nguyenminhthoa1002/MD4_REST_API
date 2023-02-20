@@ -36,8 +36,9 @@ public class OrderService implements IOrderService {
         orderRepository.deleteById(id);
     }
 
+
     @Override
-    public Orders findOrdersByUsers_UserId(int userId) {
+    public List<Orders> findOrdersByUsers_UserId(int userId) {
         return orderRepository.findOrdersByUsers_UserId(userId);
     }
 }

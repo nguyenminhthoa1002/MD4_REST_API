@@ -15,4 +15,6 @@ public interface ImageRepository extends JpaRepository<Image,Integer> {
     Set<Image> searchImageByProductId(@Param("proId") int proId);
 
     Set<Image> findByImageLinkIn(String[] listSubImage);
+
+    Image findByImageLink(String link);
 }

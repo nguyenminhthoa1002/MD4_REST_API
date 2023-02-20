@@ -28,6 +28,7 @@ public class ProductDetailController {
     private IColorService colorService;
     @Autowired
     private ISizeService sizeService;
+    private List<ProductDetail> listProductDetails;
 
     //    -------------------------- ROLE : ADMIN & MODERATOR --------------------
     @GetMapping
@@ -83,28 +84,43 @@ public class ProductDetailController {
     @PostMapping
     @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public ProductDetailResponse createProductDetail(@RequestBody ProductDetailRequest productDetail) {
-        ProductDetail pd = new ProductDetail();
-        pd.setColor((Color) colorService.findById(productDetail.getColorId()));
-        pd.setSize((Size) sizeService.findById(productDetail.getSizeId()));
-        pd.setQuantity(productDetail.getQuantity());
         Product pro = (Product) productService.findById(productDetail.getProductId());
-        pd.setProduct(pro);
-        pd.setProductDetailStatus(true);
-        productDetailService.saveOrUpdate(pd);
-        int totalQuan = pro.getTotalQuantity();
-        int proDetailQuan = pd.getQuantity();
-        totalQuan += proDetailQuan;
-        pro.setTotalQuantity(totalQuan);
-        productService.saveOrUpdate(pro);
-
+        ProductDetail existProductDetail = productDetailService.findByProduct_ProductIdAndColor_ColorIdAndSize_SizeId(productDetail.getProductId(), productDetail.getColorId(), productDetail.getSizeId());
         ProductDetailResponse pdRes = new ProductDetailResponse();
-        pdRes.setProductDetailId(pd.getProductDetailId());
-        pdRes.setQuantity(pd.getQuantity());
-        pdRes.setProductName(pd.getProduct().getProductName());
-        pdRes.setColorHex(pd.getColor().getColorHex());
-        pdRes.setColorName(pd.getColor().getColorName());
-        pdRes.setSizeName(pd.getSize().getSizeName());
+        if (existProductDetail != null) {
+            existProductDetail.setQuantity(existProductDetail.getQuantity() + productDetail.getQuantity());
+            productDetailService.saveOrUpdate(existProductDetail);
+            pro.setTotalQuantity(pro.getTotalQuantity() + productDetail.getQuantity());
+            productService.saveOrUpdate(pro);
 
+            pdRes.setProductDetailId(existProductDetail.getProductDetailId());
+            pdRes.setQuantity(existProductDetail.getQuantity());
+            pdRes.setProductName(pro.getProductName());
+            pdRes.setColorHex(existProductDetail.getColor().getColorHex());
+            pdRes.setColorName(existProductDetail.getColor().getColorName());
+            pdRes.setSizeName(existProductDetail.getSize().getSizeName());
+        } else {
+            ProductDetail pd = new ProductDetail();
+            pd.setColor((Color) colorService.findById(productDetail.getColorId()));
+            pd.setSize((Size) sizeService.findById(productDetail.getSizeId()));
+            pd.setQuantity(productDetail.getQuantity());
+            pd.setProduct(pro);
+            pd.setProductDetailStatus(true);
+            productDetailService.saveOrUpdate(pd);
+            int totalQuan = pro.getTotalQuantity();
+            int proDetailQuan = pd.getQuantity();
+            totalQuan += proDetailQuan;
+            pro.setTotalQuantity(totalQuan);
+            productService.saveOrUpdate(pro);
+
+            pdRes.setProductDetailId(pd.getProductDetailId());
+            pdRes.setQuantity(pd.getQuantity());
+            pdRes.setProductName(pd.getProduct().getProductName());
+            pdRes.setColorHex(pd.getColor().getColorHex());
+            pdRes.setColorName(pd.getColor().getColorName());
+            pdRes.setSizeName(pd.getSize().getSizeName());
+
+        }
         return pdRes;
     }
 
@@ -113,18 +129,21 @@ public class ProductDetailController {
     public ProductDetailResponse updateProductDetail(@PathVariable("productDetailId") int productDetailId, @RequestBody ProductDetailRequest productDetail) {
         ProductDetail productDetailUpdate = (ProductDetail) productDetailService.findById(productDetailId);
         Product pro = (Product) productService.findById(productDetail.getProductId());
-        productDetailUpdate.setProduct(pro);
-        productDetailUpdate.setColor((Color) colorService.findById(productDetail.getColorId()));
-        productDetailUpdate.setSize((Size) sizeService.findById(productDetail.getSizeId()));
+
+//        productDetailUpdate.setColor((Color) colorService.findById(productDetail.getColorId()));
+//        productDetailUpdate.setSize((Size) sizeService.findById(productDetail.getSizeId()));
         productDetailUpdate.setQuantity(productDetail.getQuantity());
         productDetailUpdate.setProductDetailStatus(productDetail.isProDetailStatus());
         productDetailService.saveOrUpdate(productDetailUpdate);
 
-
-        int totalQuan = pro.getTotalQuantity();
-        int proDetailQuan = productDetailUpdate.getQuantity();
-        totalQuan += proDetailQuan;
-        pro.setTotalQuantity(totalQuan);
+        Set<ProductDetail> listProductDetail = productDetailService.findByProduct_ProductId(productDetail.getProductId());
+        int totalQuantity = 0;
+        for (ProductDetail proDetail : listProductDetail) {
+            if(proDetail.isProductDetailStatus()){
+                totalQuantity += proDetail.getQuantity();
+            }
+        }
+        pro.setTotalQuantity(totalQuantity);
         productService.saveOrUpdate(pro);
 
         ProductDetailResponse pdRes = new ProductDetailResponse();
@@ -142,6 +161,17 @@ public class ProductDetailController {
     @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public void deleteProductDetail(@PathVariable("productDetailId") int productDetailId) {
         productDetailService.delete(productDetailId);
+        ProductDetail proDetailDelete = (ProductDetail) productDetailService.findById(productDetailId);
+        Product pro = (Product) productService.findById(proDetailDelete.getProduct().getProductId());
+        Set<ProductDetail> listProductDetail = productDetailService.findByProduct_ProductId(pro.getProductId());
+        int totalQuantity = 0;
+        for (ProductDetail proDetail : listProductDetail) {
+            if(proDetail.isProductDetailStatus()){
+                totalQuantity += proDetail.getQuantity();
+            }
+        }
+        pro.setTotalQuantity(totalQuantity);
+        productService.saveOrUpdate(pro);
     }
 
     @GetMapping("searchProDetailByColorOrSize")
@@ -167,7 +197,7 @@ public class ProductDetailController {
     @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public InforForProductDetailPage getProductDetailForPageByProductId(@PathVariable("proId") int proId) {
         Product pro = (Product) productService.findById(proId);
-        if (pro.isProductStatus()){
+        if (pro.isProductStatus()) {
             InforForProductDetailPage infor = new InforForProductDetailPage();
             infor.setProductName(pro.getProductName());
             infor.setProductDescription(pro.getProductDescription());

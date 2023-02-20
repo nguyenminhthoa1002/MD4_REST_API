@@ -9,6 +9,7 @@ import ra.model.repository.CatalogRepository;
 import ra.payload.respone.CatalogResponse;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -33,8 +34,8 @@ public class CatalogService implements ICatalogService<Catalog,Integer> {
     }
 
     @Override
-    public Set<Catalog> findByCatalogIdIn(int[] listCatalog) {
-        return catalogRepository.findByCatalogIdIn(listCatalog);
+    public Set<Catalog> findByCatalogIdIn(ArrayList<Integer> listCatalog) {
+        return null;
     }
 
     @Override

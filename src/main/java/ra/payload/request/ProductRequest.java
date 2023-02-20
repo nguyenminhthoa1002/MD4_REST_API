@@ -2,6 +2,8 @@ package ra.payload.request;
 
 import ra.model.entity.Image;
 
+import java.util.ArrayList;
+
 public class ProductRequest {
     private String productName;
     private String productDescription;
@@ -9,10 +11,14 @@ public class ProductRequest {
     private String productImg;
     private int catalogId;
     private boolean productStatus;
-    private int[] colorStrArr = new int[50];
-    private int[] sizeStrArr = new int[50];
-    private String[] listSubImage = new String[50];
-    private int[] proDetailArr = new int[50];
+//    private int[] colorStrArr = new int[50];
+    private ArrayList<Integer> colorStrArr = new ArrayList<>();
+//    private int[] sizeStrArr = new int[50];
+    private ArrayList<Integer> sizeStrArr = new ArrayList<>();
+//    private String[] listSubImage = new String[50];
+    private ArrayList<String> listSubImage = new ArrayList<>();
+//    private int[] proDetailArr = new int[50];
+    private ArrayList<Integer> proDetailArr = new ArrayList<>();
 
 
     public boolean isProductStatus() {
@@ -55,23 +61,6 @@ public class ProductRequest {
         this.productImg = productImg;
     }
 
-
-    public int[] getColorStrArr() {
-        return colorStrArr;
-    }
-
-    public void setColorStrArr(int[] colorStrArr) {
-        this.colorStrArr = colorStrArr;
-    }
-
-    public int[] getSizeStrArr() {
-        return sizeStrArr;
-    }
-
-    public void setSizeStrArr(int[] sizeStrArr) {
-        this.sizeStrArr = sizeStrArr;
-    }
-
     public int getCatalogId() {
         return catalogId;
     }
@@ -80,19 +69,35 @@ public class ProductRequest {
         this.catalogId = catalogId;
     }
 
-    public String[] getListSubImage() {
+    public ArrayList<Integer> getColorStrArr() {
+        return colorStrArr;
+    }
+
+    public void setColorStrArr(ArrayList<Integer> colorStrArr) {
+        this.colorStrArr = colorStrArr;
+    }
+
+    public ArrayList<Integer> getSizeStrArr() {
+        return sizeStrArr;
+    }
+
+    public void setSizeStrArr(ArrayList<Integer> sizeStrArr) {
+        this.sizeStrArr = sizeStrArr;
+    }
+
+    public ArrayList<String> getListSubImage() {
         return listSubImage;
     }
 
-    public void setListSubImage(String[] listSubImage) {
+    public void setListSubImage(ArrayList<String> listSubImage) {
         this.listSubImage = listSubImage;
     }
 
-    public int[] getProDetailArr() {
+    public ArrayList<Integer> getProDetailArr() {
         return proDetailArr;
     }
 
-    public void setProDetailArr(int[] proDetailArr) {
+    public void setProDetailArr(ArrayList<Integer> proDetailArr) {
         this.proDetailArr = proDetailArr;
     }
 }

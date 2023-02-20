@@ -26,4 +26,5 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     Set<Product> findByListColorInAndListSizeInAndProductExportPriceBetween(Set<Color> listColor, Set<Size> listSize, float min, float max);
 
     Set<Product> findByCatalog_CatalogId(int catId);
+
 }
