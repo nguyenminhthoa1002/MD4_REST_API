@@ -62,4 +62,9 @@ public class UserService implements IUserService<Users,Integer> {
     public List<Users> showAllUser() {
         return userRepository.showAllUser();
     }
+
+    @Override
+    public Users findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
 }

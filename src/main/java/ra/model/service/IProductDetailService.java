@@ -13,4 +13,5 @@ public interface IProductDetailService<T, V> extends IShopService<T, V> {
     ProductDetail findByColor_ColorHexAndSize_SizeName(String colorHex, String sizeName);
     Set<ProductDetail> findByProductDetailIdIn(ArrayList<Integer> listProductDetailId);
     ProductDetail findByProduct_ProductIdAndColor_ColorIdAndSize_SizeId(int productId, int colorId, int sizeId);
+
 }

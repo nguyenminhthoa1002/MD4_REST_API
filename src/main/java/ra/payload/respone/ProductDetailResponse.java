@@ -4,21 +4,29 @@ package ra.payload.respone;
 public class ProductDetailResponse {
     private int productDetailId;
     private int quantity;
+    private int productId;
     private String productName;
+    private int colorId;
     private String colorName;
     private String colorHex;
+    private int sizeId;
     private String sizeName;
+    private boolean productDetailStatus;
 
     public ProductDetailResponse() {
     }
 
-    public ProductDetailResponse(int productDetailId, int quantity, String productName, String colorName, String colorHex, String sizeName) {
+    public ProductDetailResponse(int productDetailId, int quantity, int productId, String productName, int colorId, String colorName, String colorHex, int sizeId, String sizeName, boolean productDetailStatus) {
         this.productDetailId = productDetailId;
         this.quantity = quantity;
+        this.productId = productId;
         this.productName = productName;
+        this.colorId = colorId;
         this.colorName = colorName;
         this.colorHex = colorHex;
+        this.sizeId = sizeId;
         this.sizeName = sizeName;
+        this.productDetailStatus = productDetailStatus;
     }
 
     public int getProductDetailId() {
@@ -67,5 +75,37 @@ public class ProductDetailResponse {
 
     public void setColorHex(String colorHex) {
         this.colorHex = colorHex;
+    }
+
+    public boolean isProductDetailStatus() {
+        return productDetailStatus;
+    }
+
+    public void setProductDetailStatus(boolean productDetailStatus) {
+        this.productDetailStatus = productDetailStatus;
+    }
+
+    public int getProductId() {
+        return productId;
+    }
+
+    public void setProductId(int productId) {
+        this.productId = productId;
+    }
+
+    public int getColorId() {
+        return colorId;
+    }
+
+    public void setColorId(int colorId) {
+        this.colorId = colorId;
+    }
+
+    public int getSizeId() {
+        return sizeId;
+    }
+
+    public void setSizeId(int sizeId) {
+        this.sizeId = sizeId;
     }
 }

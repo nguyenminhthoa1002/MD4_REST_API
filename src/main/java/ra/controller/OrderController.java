@@ -11,6 +11,7 @@ import ra.payload.request.Checkout;
 import ra.payload.request.OrderDetailRequest;
 import ra.security.CustomUserDetails;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
@@ -31,7 +32,7 @@ public class OrderController {
     private IProductService productService;
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('USER')")
+//    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('USER')")
     public ResponseEntity<?> addToCart(@RequestBody OrderDetailRequest orderDetailRequest, @RequestParam("action") String action) {
         CustomUserDetails usersChangePass = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Users users = userService.findUsersByUserName(usersChangePass.getUsername());
@@ -80,7 +81,7 @@ public class OrderController {
     }
 
     @DeleteMapping("/{orderDetailId}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('USER')")
+//    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('USER')")
     public ResponseEntity<?> deleteOrderDetail(@PathVariable("orderDetailId") int orderDetailId) {
         try {
             orderDetailService.delete(orderDetailId);
@@ -107,7 +108,7 @@ public class OrderController {
     }
 
     @PutMapping("checkout")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('USER')")
+//    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('USER')")
     public ResponseEntity<?> checkout(@RequestBody Checkout checkout) {
         try {
             CustomUserDetails usersChangePass = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -150,5 +151,22 @@ public class OrderController {
             return ResponseEntity.badRequest().body("Checkout failed!");
         }
         return null;
+    }
+
+    @PostMapping("checkoutFlashSale")
+    public ResponseEntity<?> checkoutFlashSale(@RequestParam("startFlashSale") LocalDate startFlashSale, @RequestParam("endFlashsale") LocalDate endFlashSale, @RequestBody OrderDetailRequest orderDetailRequest) {
+        CustomUserDetails usersChangePass = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Users users = userService.findUsersByUserName(usersChangePass.getUsername());
+
+        List<Orders> listOrder = orderService.findByUsers_UserIdAndCreateDateBetween(users.getUserId(), startFlashSale, endFlashSale);
+        List<OrderDetail> listOrderdetail = orderDetailService.findByOrdersIn(listOrder);
+        ProductDetail productDetail = productDetailService.findByColor_ColorHexAndSize_SizeName(orderDetailRequest.getColorHex(), orderDetailRequest.getSizeName());
+
+        for (OrderDetail od : listOrderdetail) {
+            if (od.getProductDetail().getProductDetailId()== productDetail.getProductDetailId()){
+                return ResponseEntity.ok().body("Existed");
+            }
+        }
+        return ResponseEntity.badRequest().body("Not exist");
     }
 }

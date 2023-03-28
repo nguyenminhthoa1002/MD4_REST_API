@@ -10,6 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.*;
 import ra.jwt.JwtTokenProvider;
 import ra.model.entity.ERole;
@@ -28,6 +29,8 @@ import ra.payload.respone.MessageResponse;
 import ra.security.CustomUserDetailService;
 import ra.security.CustomUserDetails;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -227,8 +230,14 @@ public class UserController {
 
     @DeleteMapping("/{userId}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
-    public void deleteUser(@PathVariable("userId") int userId) {
-        userService.delete(userId);
+    public ResponseEntity<?> deleteUser(@PathVariable("userId") int userId) {
+        try {
+            userService.delete(userId);
+            return ResponseEntity.ok().body("Delete success");
+        } catch (Exception ex) {
+            return ResponseEntity.badRequest().body("Delete failed");
+        }
+
     }
 
     @GetMapping("search")
@@ -331,11 +340,12 @@ public class UserController {
         return ResponseEntity.ok(new MessageResponse("Change password successfully!"));
     }
 
-//    @PostMapping("logout")
-//    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('USER')")
-//    public ResponseEntity<?> logout(HttpSession session) {
-//        SecurityContextHolder.clearContext();
-//        session.invalidate();
-//        return ResponseEntity.ok(new MessageResponse("Logout successfully!"));
-//    }
+    @PostMapping("logout")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('USER')")
+    public ResponseEntity<?> logout(HttpServletRequest request) {
+        SecurityContextHolder.clearContext();
+        return ResponseEntity.ok(new MessageResponse("Logout successfully!"));
+    }
+
+
 }

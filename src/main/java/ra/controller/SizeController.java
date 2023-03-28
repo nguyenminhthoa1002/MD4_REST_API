@@ -24,26 +24,26 @@ public class SizeController {
     //    -------------------------- ROLE : ADMIN & MODERATOR --------------------
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+//    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public List<Size> getAllSize() {
         return sizeService.findAll();
     }
 
     @GetMapping("/{sizeId}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+//    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public Size getById(@PathVariable("sizeId") int sizeId) {
         return (Size) sizeService.findById(sizeId);
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+//    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public Size createSize(@RequestBody Size size) {
         size.setSizeStatus(true);
         return (Size) sizeService.saveOrUpdate(size);
     }
 
     @PutMapping("/{sizeId}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+//    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public Size updateSize(@PathVariable("sizeId") int sizeId, @RequestBody Size size) {
         Size sizeUpdate = (Size) sizeService.findById(sizeId);
         sizeUpdate.setSizeName(size.getSizeName());
@@ -52,26 +52,26 @@ public class SizeController {
     }
 
     @DeleteMapping("/{sizeId}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+//    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public void deleteSize(@PathVariable("sizeId") int sizeId) {
         sizeService.delete(sizeId);
     }
 
     @GetMapping("search")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+//    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public List<Size> searchSize(@RequestParam("searchName") String searchName) {
         return sizeService.searchSize(searchName);
     }
 
     @PostMapping("getListSizeForSearch")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+//    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public Set<Color> findBySizeIdIn(@RequestBody SearchProductByColorOrSize search){
         return sizeService.findBySizeIdIn(search.getSearch());
     }
 
     //    -------------------------- ROLE : USER --------------------
     @GetMapping("/getSizeForUser")
-    @PreAuthorize("hasRole('USER')")
+//    @PreAuthorize("hasRole('USER')")
     public List<SizeResponse> getSizeForUser() {
         List<Size> listSize = sizeService.getSizeForUser();
         List<SizeResponse> list = new ArrayList<>();

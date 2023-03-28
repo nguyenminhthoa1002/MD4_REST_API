@@ -75,4 +75,5 @@ public class CatalogService implements ICatalogService<Catalog,Integer> {
         catDelete.setCatalogStatus(false);
         catalogRepository.save(catDelete);
     }
+
 }

@@ -15,4 +15,5 @@ public interface UserRepository extends JpaRepository<Users,Integer> {
     boolean existsByEmail(String email);
     @Query(value = "select * from user where userId!=1",nativeQuery = true)
     List<Users> showAllUser();
+    Users findByEmail(String email);
 }

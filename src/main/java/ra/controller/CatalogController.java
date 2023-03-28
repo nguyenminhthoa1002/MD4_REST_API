@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+//http://localhost:8080
 @CrossOrigin(origins = "http://localhost:8080")
 @RestController
 @RequestMapping("api/v1/catalog")
@@ -27,19 +28,19 @@ public class CatalogController {
 
     //    -------------------------- ROLE : ADMIN & MODERATOR --------------------
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+//    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public List<Catalog> getAllCatalog() {
         return catalogService.findAll();
     }
 
     @GetMapping("/{catalogId}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+//    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public Catalog getCatalogById(@PathVariable("catalogId") int catalogId) {
         return (Catalog) catalogService.findById(catalogId);
     }
 
     @PostMapping()
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+//    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public Catalog createCatalog(@RequestBody CatalogRequest catalog) {
         Catalog catNew = new Catalog();
         if (catalog.getCatalogParentId() == 0) {
@@ -62,19 +63,19 @@ public class CatalogController {
     }
 
     @GetMapping("showListCatalogChild/{catalogId}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+//    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public List<Catalog> findCatChild(@PathVariable("catalogId") int catalogId) {
         return catalogService.findChildById(catalogId);
     }
 
     @GetMapping("getListChildById/{catalogId}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+//    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public List<Catalog> findByCatalogParentId(@PathVariable("catalogId") int catalogId){
         return catalogService.findByCatalogParentId(catalogId);
     }
 
     @PutMapping("/{catalogId}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+//    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public Catalog updateCatalog(@PathVariable("catalogId") int catalogId, @RequestBody CatalogUpdateRequest catalog) {
         Catalog catUpdate = (Catalog) catalogService.findById(catalogId);
         List<Catalog> listChild = catalogService.findChildById(catalogId);
@@ -132,7 +133,7 @@ public class CatalogController {
     }
 
     @DeleteMapping("/{catalogId}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+//    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public void deleteCatalog(@PathVariable("catalogId") int catalogId) {
         catalogService.delete(catalogId);
         List<Catalog> listChild = catalogService.findChildById(catalogId);
@@ -145,13 +146,13 @@ public class CatalogController {
     }
 
     @GetMapping("search")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+//    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public List<Catalog> searchCatalog(@RequestParam("searchName") String searchName) {
         return catalogService.searchCatalog(searchName);
     }
 
     @GetMapping("/getCatalogForCreateProduct")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+//    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public List<CatalogResponse> getCatalogForCreateProduct() {
         List<Catalog> listCat = catalogService.getCatalogForCreateProduct();
         List<CatalogResponse> listCatRes = new ArrayList<>();
@@ -165,7 +166,7 @@ public class CatalogController {
     }
 
     @GetMapping("initCreate")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+//    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public List<CatalogResponse> getCatalogForCreatCatalog() {
         List<Catalog> listCat = catalogService.getCatalogForCreatCatalog();
         List<CatalogResponse> listCatRes = new ArrayList<>();
@@ -180,7 +181,7 @@ public class CatalogController {
 
     //    -------------------------- ROLE : USER --------------------
     @GetMapping("getCatalogForUser")
-    @PreAuthorize("hasRole('USER')")
+//    @PreAuthorize("hasRole('USER')")
     public List<CatalogResponse> getCatalogForUser() {
         List<CatalogResponse> list = new ArrayList<>();
         for (Catalog cat : getAllCatalog()) {

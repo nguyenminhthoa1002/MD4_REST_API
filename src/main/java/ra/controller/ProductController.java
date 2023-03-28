@@ -32,44 +32,47 @@ public class ProductController {
 
     //    -------------------------- ROLE : ADMIN & MODERATOR --------------------
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+//    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public List<ProductResponse> getAllProduct() {
         List<Product> listProduct = productService.findAll();
         List<ProductResponse> listProductResponse = new ArrayList<>();
-        Set<String> listColorName = new HashSet<>();
-        Set<String> listSizeName = new HashSet<>();
-        Set<String> listSubImageString = new HashSet<>();
         for (Product pro : listProduct) {
-            for (Color color : pro.getListColor()) {
-                listColorName.add(color.getColorName());
-            }
-            for (Size size : pro.getListSize()) {
-                listSizeName.add(size.getSizeName());
+            Set<String> listColorHex = new HashSet<>();
+            Set<String> listSizeName = new HashSet<>();
+            Set<String> listSubImageString = new HashSet<>();
+
+            Set<ProductDetail> listProductDetail = productDetailService.findByProduct_ProductId(pro.getProductId());
+            for (ProductDetail proDe : listProductDetail) {
+                if(proDe.getColor().isColorStatus()){
+                listColorHex.add(proDe.getColor().getColorHex());}
+                if(proDe.getSize().isSizeStatus()){
+                listSizeName.add(proDe.getSize().getSizeName());}
             }
             for (Image image : pro.getListSubImage()) {
-                listSubImageString.add(image.getImageLink());
+                if (image.isImageStatus()){
+                listSubImageString.add(image.getImageLink());}
             }
             ProductResponse productResponse = new ProductResponse(pro.getProductId(), pro.getProductName(), pro.getProductDescription(),
                     pro.getProductImportPrice(), pro.getProductExportPrice(), pro.getTotalQuantity(), pro.getProductImg(), pro.getCatalog().getCatalogName(),
-                    pro.getProductCreateDate(), pro.isProductStatus(), listColorName, listSizeName, listSubImageString);
+                    pro.getProductCreateDate(), pro.isProductStatus(), listColorHex, listSizeName, listSubImageString);
             listProductResponse.add(productResponse);
         }
         return listProductResponse;
     }
 
     @GetMapping("/{productId}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+//    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public ProductResponse getProductById(@PathVariable("productId") int productId) {
         Product pro = (Product) productService.findById(productId);
         Set<String> listColorName = new HashSet<>();
         Set<String> listSizeName = new HashSet<>();
         Set<String> listSubImageString = new HashSet<>();
-        for (Color color : pro.getListColor()) {
-            listColorName.add(color.getColorName());
+        Set<ProductDetail> listProductDetail = productDetailService.findByProduct_ProductId(productId);
+        for (ProductDetail proDe : listProductDetail) {
+            listColorName.add(proDe.getColor().getColorName());
+            listSizeName.add(proDe.getSize().getSizeName());
         }
-        for (Size size : pro.getListSize()) {
-            listSizeName.add(size.getSizeName());
-        }
+
         for (Image image : pro.getListSubImage()) {
             listSubImageString.add(image.getImageLink());
         }
@@ -80,7 +83,7 @@ public class ProductController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+//    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public ProductResponse createProduct(@RequestBody ProductRequest product) {
         Product proNew = new Product();
         proNew.setProductName(product.getProductName());
@@ -125,7 +128,7 @@ public class ProductController {
     }
 
     @PutMapping("/{productId}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+//    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public ProductResponse updateProduct(@PathVariable("productId") int productId, @RequestBody ProductRequest product) {
         Product productUpdate = (Product) productService.findById(productId);
         Catalog catalog = (Catalog) catalogService.findById(product.getCatalogId());
@@ -226,12 +229,12 @@ public class ProductController {
     }
 
     @DeleteMapping("/{productId}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+//    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public void deleteProduct(@PathVariable("productId") int productId) {
         productService.delete(productId);
         Product productDelete = (Product) productService.findById(productId);
         Set<ProductDetail> listProDetail = productDetailService.findByProduct_ProductId(productId);
-        if(listProDetail!=null) {
+        if (listProDetail != null) {
             for (ProductDetail pd : listProDetail) {
                 pd.setProductDetailStatus(false);
                 productDetailService.saveOrUpdate(pd);
@@ -242,7 +245,7 @@ public class ProductController {
     }
 
     @GetMapping("search")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+//    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public List<ProductResponse> searchProduct(@RequestParam("searchName") String searchName) {
         List<Product> listPro = productService.searchProduct(searchName);
         List<ProductResponse> listProResponse = new ArrayList<>();
@@ -278,7 +281,7 @@ public class ProductController {
     }
 
     @GetMapping("/getAllProductByCatalogId")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+//    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public Set<ProductResponse> getAllProductByCatalogId(@RequestParam("catId") int catId) {
         Set<Product> listPro = productService.findByCatalog_CatalogId(catId);
         Set<ProductResponse> listProResponse = new HashSet<>();
@@ -314,7 +317,7 @@ public class ProductController {
     }
 
     @PostMapping("initCreateOrUpdate")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+//    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public InforForCreateOrUpdateProduct initCreateOrUpdate() {
         List<Catalog> listCat = catalogService.getCatalogForCreateProduct();
         List<CatalogResponse> listCatalogRes = new ArrayList<>();
@@ -353,7 +356,7 @@ public class ProductController {
 
     //    -------------------------- ROLE : USER --------------------
     @GetMapping("/displayProduct")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('USER')")
+//    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('USER')")
     public List<ProductResponseForUser> displayProduct() {
         Set<Product> listProduct = productService.findByProductStatusIsTrue();
         List<ProductResponseForUser> productResponseForUserList = new ArrayList<>();
@@ -376,7 +379,7 @@ public class ProductController {
     }
 
     @GetMapping("/searchProductByProductExportPrice")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('USER')")
+//    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('USER')")
     public List<ProductResponseForUser> searchProductByProductExportPriceBetween(@RequestParam("min") float min, @RequestParam("max") float max) {
         List<Product> listProduct = productService.searchProductByProductExportPriceBetween(min, max);
         List<ProductResponseForUser> responseForUserList = new ArrayList<>();
@@ -399,7 +402,7 @@ public class ProductController {
     }
 
     @GetMapping("/searchProductByColor")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('USER')")
+//    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('USER')")
     public List<ProductResponseForUser> searchProductByColorName(@RequestBody SearchProductByColorOrSize search) {
         Set<Color> listColor = colorService.findByColorIdIn(search.getSearch());
         Set<Product> listSearch = productService.findByListColorIn(listColor);
@@ -424,7 +427,7 @@ public class ProductController {
     }
 
     @GetMapping("/searchProductBySize")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('USER')")
+//    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('USER')")
     public List<ProductResponseForUser> searchProductBySizeName(@RequestBody SearchProductByColorOrSize search) {
         Set<Size> listSize = sizeService.findBySizeIdIn(search.getSearch());
         Set<Product> listSearch = productService.findByListSizeIn(listSize);
@@ -449,7 +452,7 @@ public class ProductController {
     }
 
     @GetMapping("searchProductByColorSizePrice")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('USER')")
+//    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('USER')")
     public List<ProductResponseForUser> findByListColorInAndListSizeInAndProductExportPriceBetween(@RequestBody SearchByPriceColorSize search) {
         Set<Color> listColor = colorService.findByColorIdIn(search.getListColor());
         Set<Size> listSize = sizeService.findBySizeIdIn(search.getListsize());

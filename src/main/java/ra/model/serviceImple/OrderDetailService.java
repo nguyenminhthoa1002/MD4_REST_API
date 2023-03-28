@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ra.model.entity.OrderDetail;
+import ra.model.entity.Orders;
 import ra.model.entity.ProductDetail;
 import ra.model.repository.OrderDetailRepository;
 import ra.model.service.IOrderDetailService;
@@ -46,5 +47,10 @@ public class OrderDetailService implements IOrderDetailService {
     @Override
     public List<OrderDetail> findByOrders_OrderId(int orderId) {
         return orderDetailRepository.findByOrders_OrderId(orderId);
+    }
+
+    @Override
+    public List<OrderDetail> findByOrdersIn(List<Orders> listOrder) {
+        return orderDetailRepository.findByOrdersIn(listOrder);
     }
 }

@@ -16,4 +16,5 @@ public interface ICatalogService<T,V> extends IShopService<T,V>{
     List<Catalog> getCatalogForCreatCatalog();
     List<Catalog> findAllParentById(int catPaId);
     List<Catalog> findByCatalogParentId(int catalogId);
+
 }

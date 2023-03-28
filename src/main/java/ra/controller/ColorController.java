@@ -25,26 +25,26 @@ public class ColorController {
 
     //    -------------------------- ROLE : ADMIN & MODERATOR --------------------
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+//    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public List<Color> getAllColor() {
         return colorService.findAll();
     }
 
     @GetMapping("/{colorId}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+//    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public Color getColorById(@PathVariable("colorId") int colorId) {
         return (Color) colorService.findById(colorId);
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+//    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public Color createColor(@RequestBody Color color) {
         color.setColorStatus(true);
         return (Color) colorService.saveOrUpdate(color);
     }
 
     @PutMapping("/{colorId}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+//    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public Color updateColor(@PathVariable("colorId") int colorId, @RequestBody Color color) {
         Color colorUpdate = (Color) colorService.findById(colorId);
         colorUpdate.setColorHex(color.getColorHex());
@@ -54,26 +54,26 @@ public class ColorController {
     }
 
     @DeleteMapping("/{colorId}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+//    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public void deleteColor(@PathVariable("colorId") int colorId) {
         colorService.delete(colorId);
     }
 
     @GetMapping("search")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+//    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public List<Color> searchColor(@RequestParam("searchName") String searchName) {
         return colorService.searchColor(searchName);
     }
 
     @PostMapping("getListColorForSearch")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+//    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public Set<Color> findByColorIdIn(@RequestBody SearchProductByColorOrSize search){
         return colorService.findByColorIdIn(search.getSearch());
     }
 
     //    -------------------------- ROLE : USER --------------------
     @GetMapping("getColorForUser")
-    @PreAuthorize("hasRole('USER')")
+//    @PreAuthorize("hasRole('USER')")
     public List<ColorResponse> getColorForUser() {
         List<Color> listColor = colorService.getColorForUser();
         List<ColorResponse> list = new ArrayList<>();

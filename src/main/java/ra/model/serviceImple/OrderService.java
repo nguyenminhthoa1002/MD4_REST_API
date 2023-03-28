@@ -8,6 +8,7 @@ import ra.model.repository.OrderRepository;
 import ra.model.service.IOrderService;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -40,5 +41,10 @@ public class OrderService implements IOrderService {
     @Override
     public List<Orders> findOrdersByUsers_UserId(int userId) {
         return orderRepository.findOrdersByUsers_UserId(userId);
+    }
+
+    @Override
+    public List<Orders> findByUsers_UserIdAndCreateDateBetween(int userId, LocalDate startFlashSale, LocalDate endFlashSale) {
+        return orderRepository.findByUsers_UserIdAndCreateDateBetween(userId, startFlashSale, endFlashSale);
     }
 }

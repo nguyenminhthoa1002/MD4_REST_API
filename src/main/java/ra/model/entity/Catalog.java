@@ -25,7 +25,7 @@ public class Catalog {
     private int catalogId;
     private String catalogName;
     private String catalogDescription;
-    @JsonIgnore
+//    @JsonIgnore
     private int catalogParentId;
     private String catalogParentName;
     @JsonFormat(pattern = "dd/MM/yyyy")
